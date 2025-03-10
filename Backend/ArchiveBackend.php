@@ -24,7 +24,7 @@ namespace OCA\RotDrop\Toolkit\Backend;
 
 use InvalidArgumentException;
 use wapmorgan\UnifiedArchive;
-use wapmorgan\UnifiedArchive\Drivers\BasicDriver;
+use wapmorgan\UnifiedArchive\Abilities;
 
 use OCA\RotDrop\Toolkit\Backend\ArchiveFormats as Formats;
 
@@ -49,14 +49,20 @@ class ArchiveBackend extends UnifiedArchive\UnifiedArchive
     ],
   ];
 
-  /** {@inheritdoc} */
-  public static function open($fileName, $abilities = [], $password = null)
+  /**
+   * {@inheritdoc}
+   *
+   * @param bool $contentCheck Whether to also look at the contents of a file
+   * to determine its MIME-type if it could not be determined by its file
+   * extension.
+   */
+  public static function open($fileName, $abilities = [], $password = null, bool $contentCheck = true)
   {
     if (!file_exists($fileName) || !is_readable($fileName)) {
       throw new InvalidArgumentException('Could not open file: ' . $fileName.' is not readable');
     }
 
-    $format = Formats::detectArchiveFormat($fileName);
+    $format = Formats::detectArchiveFormat($fileName, contentCheck: $contentCheck);
     if ($format === false) {
       return null;
     }
@@ -67,13 +73,13 @@ class ArchiveBackend extends UnifiedArchive\UnifiedArchive
     }
 
     if (empty($abilities)) {
-      $abilities = [BasicDriver::OPEN];
+      $abilities = [Abilities::OPEN];
       if (!empty($password)) {
-        $abilities[] = BasicDriver::OPEN_ENCRYPTED;
+        $abilities[] = Abilities::OPEN_ENCRYPTED;
       }
     }
 
-    $formatDrivers = Formats::getFormatDrivers($format, $abilities);
+    $formatDrivers = Formats::getFormatDrivers(format: $format, abilities: $abilities);
     if (empty($formatDrivers)) {
       return null;
     }
@@ -82,6 +88,6 @@ class ArchiveBackend extends UnifiedArchive\UnifiedArchive
 
     $driver = $formatDrivers[0];
 
-    return new static($fileName, $format, $driver, $password);
+    return new static(fileName: $fileName, format: $format, driver: $driver, password: $password);
   }
 }

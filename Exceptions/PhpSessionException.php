@@ -3,7 +3,7 @@
  * Some PHP utility functions for Nextcloud apps.
  *
  * @author Claus-Justus Heine <himself@claus-justus-heine.de>
- * @copyright 2022, 2024 Claus-Justus Heine <himself@claus-justus-heine.de>
+ * @copyright 2022, 2023 Claus-Justus Heine <himself@claus-justus-heine.de>
  * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,38 +22,7 @@
 
 namespace OCA\RotDrop\Toolkit\Exceptions;
 
-/**
- * Transparent archive extraction exception.
- */
-class ArchiveTooLargeException extends ArchiveException
+/** Thrown if there is something wrong with the access to the PHP session. */
+class PhpSessionException extends Exception
 {
-  // phpcs:ignore Squiz.Commenting.FunctionComment.Missing
-  public function __construct(
-    string $message,
-    private int $limit,
-    private int $actualSize,
-    ?\Throwable $previous = null,
-  ) {
-    parent::__construct($message, 0, $previous);
-  }
-
-  /**
-   * Return the configured limit.
-   *
-   * @return int
-   */
-  public function getLimit():int
-  {
-    return $this->limit;
-  }
-
-  /**
-   * Return the actual uncompressed size of the archive.
-   *
-   * @return int
-   */
-  public function getActualSize():int
-  {
-    return $this->actualSize;
-  }
 }

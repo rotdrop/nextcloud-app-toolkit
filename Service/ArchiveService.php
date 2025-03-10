@@ -3,7 +3,7 @@
  * Some PHP utility functions for Nextcloud apps.
  *
  * @author Claus-Justus Heine <himself@claus-justus-heine.de>
- * @copyright 2022 Claus-Justus Heine <himself@claus-justus-heine.de>
+ * @copyright 2022, 2023, 2024 Claus-Justus Heine <himself@claus-justus-heine.de>
  * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
@@ -96,7 +96,7 @@ class ArchiveService
   /**
    * @var string
    *
-   * Propose a mount-point name based on the archive name.
+   * Propose a mount point name based on the archive name.
    */
   public const ARCHIVE_INFO_DEFAULT_MOUNT_POINT = 'defaultMountPoint';
 
@@ -145,19 +145,16 @@ class ArchiveService
 
   // phpcs:ignore Squiz.Commenting.FunctionComment.Missing
   public function __construct(
-    ILogger $logger,
-    ?IL10N $l = null,
+    protected ILogger $logger,
+    protected IL10N $l,
   ) {
-    $this->logger = $logger;
-    $this->l = $l;
     $this->archiver = null;
     $this->fileNode = null;
   }
   // phpcs:enable
 
   /**
-   * Set the locatlization to use. This cannot be done by dependency injection
-   * here.
+   * Set the localization to use.
    *
    * @param IL10N $l10n
    *
@@ -235,6 +232,16 @@ class ArchiveService
   public function canOpen(File $fileNode):bool
   {
     return ArchiveBackend::canOpen(self::getLocalPath($fileNode));
+  }
+
+  /**
+   * Return the "opened" status.
+   *
+   * @return true
+   */
+  public function isOpen():bool
+  {
+    return $this->archiver !== null;
   }
 
   /**
@@ -318,7 +325,7 @@ class ArchiveService
       self::ARCHIVE_INFO_ORIGINAL_SIZE => $this->archiver->getOriginalSize(),
       self::ARCHIVE_INFO_NUMBER_OF_FILES => $this->archiver->countFiles(),
       self::ARCHIVE_INFO_COMMENT => $archiveComment,
-      self::ARCHIVE_INFO_DEFAULT_MOUNT_POINT => $this->getArchiveFolderName(),
+      self::ARCHIVE_INFO_DEFAULT_MOUNT_POINT => self::getArchiveFolderName($this->fileNode->getName()),
       self::ARCHIVE_INFO_COMMON_PATH_PREFIX => $this->getCommonDirectoryPrefix(),
       self::ARCHIVE_INFO_BACKEND_DRIVER => $this->getClassBaseName($this->archiver->getDriverType()),
     ];
@@ -328,15 +335,14 @@ class ArchiveService
    * Return a proposal for the extraction destination. Currently, this simply
    * strips double extensions like FOO.tag.N -> FOO.
    *
+   * @param string $archiveFileName
+   *
    * @return string
    */
-  public function getArchiveFolderName():?string
+  public static function getArchiveFolderName(string $archiveFileName):?string
   {
-    if (empty($this->fileNode)) {
-      return null;
-    }
     // double to account for "nested" archive types
-    $archiveFolderName = pathinfo($this->fileNode->getName(), PATHINFO_FILENAME);
+    $archiveFolderName = pathinfo($archiveFileName, PATHINFO_FILENAME);
     $secondExtension = pathinfo($archiveFolderName, PATHINFO_EXTENSION);
 
     // as a rule of thumb we only strip the second extension if it contains no

@@ -3,7 +3,7 @@
  * Some PHP utility functions for Nextcloud apps.
  *
  * @author Claus-Justus Heine <himself@claus-justus-heine.de>
- * @copyright 2022, 2024 Claus-Justus Heine <himself@claus-justus-heine.de>
+ * @copyright 2022, 2023, 2024 Claus-Justus Heine <himself@claus-justus-heine.de>
  * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,38 +22,28 @@
 
 namespace OCA\RotDrop\Toolkit\Exceptions;
 
-/**
- * Transparent archive extraction exception.
- */
-class ArchiveTooLargeException extends ArchiveException
+use Throwable;
+
+use OCP\ISession;
+
+/** @see OCA\RotDrop\Toolkit\Service\RequestService */
+class SessionStillOpenException extends PhpSessionException
 {
-  // phpcs:ignore Squiz.Commenting.FunctionComment.Missing
+  // phpcs:disable Squiz.Commenting.FunctionComment.Missing
   public function __construct(
-    string $message,
-    private int $limit,
-    private int $actualSize,
-    ?\Throwable $previous = null,
+    string $message = "",
+    int $code = 0,
+    ?Throwable $previous = null,
+    private ?ISession $session = null,
   ) {
-    parent::__construct($message, 0, $previous);
+    parent::__construct($message, $code, $previous);
+    $this->session = $session;
   }
+  // phpcs:enable Squiz.Commenting.FunctionComment.Missing
 
-  /**
-   * Return the configured limit.
-   *
-   * @return int
-   */
-  public function getLimit():int
+  /** @return null|ISession */
+  public function getSession():?ISession
   {
-    return $this->limit;
-  }
-
-  /**
-   * Return the actual uncompressed size of the archive.
-   *
-   * @return int
-   */
-  public function getActualSize():int
-  {
-    return $this->actualSize;
+    return $this->session;
   }
 }

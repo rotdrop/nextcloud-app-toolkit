@@ -1,9 +1,9 @@
 <?php
 /**
- * Some PHP utility functions for Nextcloud apps.
+ * A collection of reusable traits classes for Nextcloud apps.
  *
  * @author Claus-Justus Heine <himself@claus-justus-heine.de>
- * @copyright 2022, 2024 Claus-Justus Heine <himself@claus-justus-heine.de>
+ * @copyright 2022, 2023 Claus-Justus Heine <himself@claus-justus-heine.de>
  * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,40 +20,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\RotDrop\Toolkit\Exceptions;
+namespace OCA\RotDrop\Toolkit\Traits;
 
 /**
- * Transparent archive extraction exception.
+ * Supply a dummy t() function in order to inject strings into the translation
+ * machinery.
+ *
+ * @SuppressWarnings(PHPMD.ShortMethodName)
  */
-class ArchiveTooLargeException extends ArchiveException
+trait FakeTranslationTrait
 {
-  // phpcs:ignore Squiz.Commenting.FunctionComment.Missing
-  public function __construct(
-    string $message,
-    private int $limit,
-    private int $actualSize,
-    ?\Throwable $previous = null,
-  ) {
-    parent::__construct($message, 0, $previous);
-  }
-
   /**
-   * Return the configured limit.
+   * @param string $text
    *
-   * @return int
-   */
-  public function getLimit():int
-  {
-    return $this->limit;
-  }
-
-  /**
-   * Return the actual uncompressed size of the archive.
+   * @param array $parameters
    *
-   * @return int
+   * @return string
    */
-  public function getActualSize():int
+  protected static function t(string $text, array $parameters = []):string
   {
-    return $this->actualSize;
+    if (!is_array($parameters)) {
+      $parameters = [ $parameters ];
+    }
+    return vsprintf($text, $parameters);
   }
 }
