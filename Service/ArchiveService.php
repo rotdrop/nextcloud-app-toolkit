@@ -23,11 +23,8 @@
 namespace OCA\RotDrop\Toolkit\Service;
 
 use DateTimeInterface;
-use Normalizer;
 
-use wapmorgan\UnifiedArchive\Abilities as DriverAbilities;
 use wapmorgan\UnifiedArchive\ArchiveEntry;
-use wapmorgan\UnifiedArchive\Drivers\Basic\BasicDriver;
 use wapmorgan\UnifiedArchive\Exceptions as BackendExceptions;
 
 use OCP\IL10N;
@@ -134,14 +131,6 @@ class ArchiveService
     self::ARCHIVE_INFO_BACKEND_DRIVER,
   ];
 
-  /**
-   * @var Enforce UTF-8 in the environment.
-   */
-  protected const OVERRIDE_ENVIRONMENT = [
-    'LANG' => 'C.UTF-8',
-    'LC_ALL' => 'C.UTF-8',
-  ];
-
   /** @var null|int */
   private $sizeLimit = null;
 
@@ -154,18 +143,6 @@ class ArchiveService
   /** @var array */
   private $archiveFiles;
 
-  /** @var array */
-  private $archiveInfo;
-
-  /** @var array */
-  private array $savedProcessEnvironment;
-
-  /**
-   * @var int
-   * Normalization convention used inside the archive.
-   */
-  private int $unicodeNormalization;
-
   // phpcs:ignore Squiz.Commenting.FunctionComment.Missing
   public function __construct(
     protected ILogger $logger,
@@ -173,8 +150,6 @@ class ArchiveService
   ) {
     $this->archiver = null;
     $this->fileNode = null;
-    $this->archiveFiles = null;
-    $this->archiveInfo = null;
   }
   // phpcs:enable
 
@@ -244,7 +219,7 @@ class ArchiveService
    */
   private static function getLocalPath(File $fileNode):string
   {
-    return realpath($fileNode->getStorage()->getLocalFile($fileNode->getInternalPath()));
+    return $fileNode->getStorage()->getLocalFile($fileNode->getInternalPath());
   }
 
   /**
@@ -253,80 +228,10 @@ class ArchiveService
    * @param File $fileNode
    *
    * @return bool
-   *
-   * @throws Exceptions\ArchiveCannotOpenException
    */
   public function canOpen(File $fileNode):bool
   {
-    $this->setProcessEnvironment();
-
-    $localPath = self::getLocalPath($fileNode);
-
-    $format = ArchiveFormats::detectArchiveFormat($localPath);
-    $canOpen = $format !== null && ArchiveFormats::canOpen($format);
-
-    $this->restoreProcessEnvironment();
-
-    if ($format === null) {
-      throw new Exceptions\ArchiveCannotOpenException(
-        $this->l->t('Unable to detect the archive format of "%1$s".', $fileNode->getName())
-      );
-    }
-    if (!$canOpen) {
-      $messages = [];
-      if (str_starts_with($format, 't') && !str_starts_with($format, 'tar')) {
-        $innerFormat = 'tar';
-        $compositeFormat = $format;
-        $format = substr($format, 1);
-        $this->setProcessEnvironment();
-        $canDecompress = $format !== null && ArchiveFormats::canOpen($format);
-        $canUntar = ArchiveFormats::canOpen($innerFormat);
-        $this->restoreProcessEnvironment();
-        if (!$canDecompress) {
-          $messages[] = $this->l->t('Archive format of "%1$s" detected as "%2$s", but there is no backend driver installed which can decompress ".%3$s" files.', [
-             $fileNode->getName(),
-             $compositeFormat,
-             $format,
-          ]);
-        }
-        if (!$canUntar) {
-          // this should never be the case ...
-          $messages[] = $this->l->t(
-            'Unable to deal with tar-files. Please check the installation of the app.'
-          );
-        }
-      } else {
-        $messages[] = $this->l->t('The archive format of "%1$s" has been detected as "%2$s", but there is no backend driver installed which can deal with this format.', [
-          $fileNode->getName(),
-          $format,
-        ]);
-      }
-      $formats = ArchiveFormats::getDeclaredDriverFormats();
-      foreach ($formats[$format] as $driverClass) {
-        $shortDriver = substr($driverClass, strrpos($driverClass, '\\') + 1);
-        if (!$driverClass::isInstalled()) {
-          $messages[] = $this->l->t('The "%1$s" driver could handle this format, but it is not installed.', $shortDriver);
-          $typeLabel = BasicDriver::$typeLabels[$driverClass::TYPE];
-          $instructions = $driverClass::getInstallationInstruction();
-          $messages[] = $this->l->t('Installation instructions: ')
-            . ucfirst($typeLabel)
-            . '. '
-            . ucfirst($instructions)
-            . '.';
-          continue;
-        }
-        $abilities = $driverClass::getFormatAbilities($format);
-        $requiredAbilities = DriverAbilities::OPEN|DriverAbilities::EXTRACT_CONTENT;
-        if (($abilities & $requiredAbilities) != $requiredAbilities) {
-          $messages[] = $this->l->t('The "%1$s" driver claims to handle this format, but cannot extract the archive content.', $shortDriver);
-        }
-      }
-      throw new Exceptions\ArchiveCannotOpenException(
-        implode(PHP_EOL, $messages)
-      );
-    }
-
-    return true;
+    return ArchiveBackend::canOpen(self::getLocalPath($fileNode));
   }
 
   /**
@@ -350,7 +255,6 @@ class ArchiveService
     $this->archiver = null;
     $this->fileNode = null;
     $this->archiveFiles = null;
-    $this->archiveInfo = null;
   }
 
   /**
@@ -369,13 +273,7 @@ class ArchiveService
         $fileNode->getPath(), self::getLocalPath($fileNode),
       ]));
     }
-
-    $this->setProcessEnvironment();
-
     $this->archiver = ArchiveBackend::open(self::getLocalPath($fileNode), password: $password);
-
-    $this->restoreProcessEnvironment();
-
     if (empty($this->archiver)) {
       throw new Exceptions\ArchiveCannotOpenException($this->t('Unable to open archive file %s (%s)', [
         $fileNode->getPath(), self::getLocalPath($fileNode),
@@ -395,16 +293,8 @@ class ArchiveService
           $fileNode->getInternalPath(), CloudUtil::humanFileSize($archiveSize), CloudUtil::humanFileSize($sizeLimit),
         ]),
         $sizeLimit,
-        $archiveSize,
+        $archiveInfo,
       );
-    }
-
-    $this->unicodeNormalization = Normalizer::NFC;
-    foreach ($this->archiver->getFileNames() as $fileName) {
-      if (!Normalizer::isNormalized($fileName)) {
-        $this->unicodeNormalization = Normalizer::NFD;
-        break;
-      }
     }
 
     return $this;
@@ -417,13 +307,6 @@ class ArchiveService
       throw new Exceptions\ArchiveNotOpenException(
         $this->t('There is no archive file associated with this archiver instance.'));
     }
-
-    if ($this->archiveInfo !== null) {
-      return $this->archiveInfo;
-    }
-
-    $this->setProcessEnvironment();
-
     // getComment() throws if not supported (API documents differently)
     try {
       $archiveComment = $this->archiver->getComment();
@@ -434,7 +317,7 @@ class ArchiveService
 
     // $this->logInfo('MIME ' .  $this->fileNode->getMimeType());
 
-    $this->archiveInfo = [
+    return [
       self::ARCHIVE_INFO_FORMAT => $this->archiver->getFormat(),
       self::ARCHIVE_INFO_MIME_TYPE => $this->fileNode->getMimeType(),
       self::ARCHIVE_INFO_SIZE => $this->archiver->getSize(),
@@ -446,10 +329,6 @@ class ArchiveService
       self::ARCHIVE_INFO_COMMON_PATH_PREFIX => $this->getCommonDirectoryPrefix(),
       self::ARCHIVE_INFO_BACKEND_DRIVER => $this->getClassBaseName($this->archiver->getDriverType()),
     ];
-
-    $this->restoreProcessEnvironment();
-
-    return $this->archiveInfo;
   }
 
   /**
@@ -495,13 +374,6 @@ class ArchiveService
       throw new Exceptions\ArchiveNotOpenException(
         $this->t('There is no archive file associated with this archiver instance.'));
     }
-
-    if ($this->archiveFiles !== null) {
-      return $this->archiveFiles;
-    }
-
-    $this->setProcessEnvironment();
-
     foreach ($this->archiver->getFileNames() as $fileName) {
       $fileData = $this->archiver->getFileData($fileName);
       // work around a bug in UnifiedArchive
@@ -510,9 +382,6 @@ class ArchiveService
       }
       $this->archiveFiles[$fileName] = $fileData;
     }
-
-    $this->restoreProcessEnvironment();
-
     return $this->archiveFiles;
   }
 
@@ -527,14 +396,7 @@ class ArchiveService
       throw new Exceptions\ArchiveNotOpenException(
         $this->t('There is no archive file associated with this archiver instance.'));
     }
-
-    $this->setProcessEnvironment();
-
-    $result = $this->archiver->getFileContent(Normalizer::normalize($fileName, $this->unicodeNormalization));
-
-    $this->restoreProcessEnvironment();
-
-    return $result;
+    return $this->archiver->getFileContent($fileName);
   }
 
   /**
@@ -548,51 +410,6 @@ class ArchiveService
       throw new Exceptions\ArchiveNotOpenException(
         $this->t('There is no archive file associated with this archiver instance.'));
     }
-
-    $this->setProcessEnvironment();
-
-    $result = $this->archiver->getFileStream(Normalizer::normalize($fileName, $this->unicodeNormalization));
-
-    $this->restoreProcessEnvironment();
-
-    return $result;
-  }
-
-  /**
-   * Enforece UTF-8 locale in the enviroment as otherwise some external
-   * helpers do not function correctly.
-   *
-   * @return void
-   *
-   * @SuppressWarnings(PHPMD.Superglobals)
-   */
-  protected function setProcessEnvironment():void
-  {
-    foreach (self::OVERRIDE_ENVIRONMENT as $key => $value) {
-      $this->savedProcessEnvironment[$key] = $_ENV[$key] ?? null;
-      $_ENV[$key] = $value;
-    }
-  }
-
-  /**
-   * Restore the environment variables previously overridden by
-   * setProcessEnvironment().
-   *
-   * @return void
-   *
-   * @SuppressWarnings(PHPMD.Superglobals)
-   */
-  protected function restoreProcessEnvironment():void
-  {
-    foreach (array_keys(self::OVERRIDE_ENVIRONMENT) as $key) {
-      if (!isset($this->savedProcessEnvironment[$key])) {
-        continue;
-      }
-      if ($this->savedProcessEnvironment[$key] === null) {
-        unset($_ENV[$key]);
-      } else {
-        $_ENV[$key] = $this->savedProcessEnvironment[$key];
-      }
-    }
+    return $this->archiver->getFileStream($fileName);
   }
 }
