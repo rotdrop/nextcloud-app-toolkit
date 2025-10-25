@@ -23,6 +23,7 @@
 namespace OCA\RotDrop\Toolkit\Service;
 
 use RuntimeException;
+use Throwable;
 
 use Psr\Log\LoggerInterface;
 use OCP\IL10N;
@@ -57,7 +58,7 @@ class GroupFoldersServiceNC32
   const MANAGER_TYPE_USER = 'user';
 
   /**
-   * @var array
+   * @var array<string, FolderWithMappingsAndCache>
    *
    * All shared folders.
    * ```
@@ -80,8 +81,11 @@ class GroupFoldersServiceNC32
    *   ]
    * ]
    * ```
+   *
+   * Nowadays the elements are objects with an toArray() method which
+   * generates above array structure.
    */
-  private $sharedFolders = null;
+  private ?array $sharedFolders = null;
 
   // phpcs:disable Squiz.Commenting.FunctionComment.Missing
   public function __construct(
@@ -118,12 +122,9 @@ class GroupFoldersServiceNC32
     $folders = $this->folderManager->getAllFoldersWithSize();
     $this->sharedFolders = [];
     foreach ($folders as $folderInfo) {
-      if ($folderInfo instanceof FolderWithMappingsAndCache) {
-        $folderInfo = $folderInfo->toArray();
-      }
-      $this->sharedFolders[$folderInfo['mount_point']] = $folderInfo;
+      $this->sharedFolders[$folderInfo->mountPoint] = $folderInfo;
     }
-    $this->logDebug('FOLDERS ' . print_r($this->sharedFolders, true));
+    // $this->logDebug('FOLDERS ' . print_r(array_map(fn(FolderWithMappingsAndCache $value) => $value->toArray(), $this->sharedFolders), true));
   }
 
   /**
@@ -148,7 +149,7 @@ class GroupFoldersServiceNC32
    * @return null|array Return the data requested from the groupfolders app or
    * null if the folder is not found.
    */
-  public function getFolder(string $mountPoint, bool $reload = false):?array
+  public function getFolder(string $mountPoint, bool $reload = false):?FolderWithMappingsAndCache
   {
     $this->ensureFolders($reload);
     $this->logDebug('SHARED FOLDERS: ' . print_r($this->sharedFolders, true));
@@ -175,12 +176,12 @@ class GroupFoldersServiceNC32
     $this->logDebug('REGEXP ' . $regexp . ' / ' . $topic);
     switch ($topic) {
       case self::SEARCH_TOPIC_MOUNT:
-        return array_filter($this->sharedFolders, function($folderInfo) use ($regexp) {
-          return preg_match($regexp, $folderInfo['mount_point']);
+        return array_filter($this->sharedFolders, function(FolderWithMappingsAndCache $folderInfo) use ($regexp) {
+          return preg_match($regexp, $folderInfo->mountPoint);
         });
       case self::SEARCH_TOPIC_GROUP:
-        return array_filter($this->sharedFolders, function($folderInfo) use ($regexp) {
-          foreach (array_keys($folderInfo['groups']) as $group) {
+        return array_filter($this->sharedFolders, function(FolderWithMappingsAndCache $folderInfo) use ($regexp) {
+          foreach (array_keys($folderInfo->groups) as $group) {
             if (preg_match($regexp, $group)) {
               return true;
             }
@@ -199,33 +200,39 @@ class GroupFoldersServiceNC32
    */
   public function deleteFolders(string $mountRegexp):void
   {
+    /** @var FolderWithMappingsAndCache $folderInfo */
     foreach ($this->searchFolders($mountRegexp) as $folderInfo) {
-      $this->folderStorageManager->deleteStoragesForFolder($folderInfo['id']);
-      $this->folderManager->removeFolder($folderInfo['id']);
-      unset($this->sharedFolders[$folderInfo['mount_point']]);
+      $this->folderStorageManager->deleteStoragesForFolder($folderInfo);
+      $this->folderManager->removeFolder($folderInfo->id);
+      unset($this->sharedFolders[$folderInfo->mountPoint]);
     }
   }
 
   /**
-   * Get the shared folder by its id. The folder must exist
+   * Get the shared folder by its id. The folder must exist. The internal
+   * cache is updated as appropriate.
    *
    * @param int $id
    *
-   * @return array
+   * @return FolderWithMappingsAndCache
+   *
+   * @throws RuntimeException
    */
-  public function getFolderById(int $id):array
+  public function getFolderById(int $id):FolderWithMappingsAndCache
   {
+    /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->folderManager->getFolder($id);
-    if (empty($folderInfo)) {
+    if ($folderInfo === null) {
       throw new RuntimeException($this->l->t('Shared folder with id "%1$s" does not exist.', [ $id ]));
     }
+    /** @var FolderWithMappingsAndCache $cachedInfo */
     foreach ($this->sharedFolders as $mountPoint => $cachedInfo) {
-      if ($cachedInfo['id'] == $folderInfo['id']) {
+      if ($cachedInfo->id == $folderInfo->id) {
         unset($this->sharedFolders[$mountPoint]);
       }
     }
-    $this->sharedFolders[$folderInfo['mount_point']] = $folderInfo;
-    $this->logDebug('BY ID INFO ' . print_r($folderInfo, true));
+    $this->sharedFolders[$folderInfo->mountPoint] = $folderInfo;
+    // $this->logDebug('BY ID INFO ' . print_r($folderInfo->toArray(), true));
     return $folderInfo;
   }
 
@@ -250,11 +257,11 @@ class GroupFoldersServiceNC32
   public function createFolder(string $mountPoint, array $groups, array $manager = []):void
   {
     $folderInfo = $this->getFolder($mountPoint);
-    if (!empty($folderInfo)) {
+    if ($folderInfo !== null) {
       throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" already exists, cannot create it.', [ $mountPoint ]));
     }
     $id = $this->folderManager->createFolder($mountPoint);
-    $folderInfo = $this->getFolderById($id);
+    $this->getFolderById($id); // just trigger cache-fill, ignore result
 
     foreach ($groups as $groupId => $permissions) {
       $this->addGroupToFolder($mountPoint, $groupId, $permissions);
@@ -287,19 +294,17 @@ class GroupFoldersServiceNC32
   ):void {
     // POST BASEURL/groupfolders/folders/4/groups
     // DATA group: GROUP_ID
+    /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
-    if (empty($folderInfo)) {
+    if ($folderInfo === null) {
       throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot add group "%2$s".', [ $mountPoint, $groupId ]));
     }
-    if (!isset($folderInfo['groups'][$groupId])) {
-      $this->folderManager->addApplicableGroup($folderInfo['id'], $groupId);
-      $folderInfo['groups'][$groupId] = [
-        'displayName' => $groupId,
-        'permissions' => self::DEFAULT_PERMISSIONS,
-        'type' => 'group',
-      ];
+    if (!isset($folderInfo->groups[$groupId])) {
+      $this->folderManager->addApplicableGroup($folderInfo->id, $groupId);
+      // properties are read-only, so re-fetch
+      $folderInfo = $this->getFolderById($folderInfo->id);
     }
-    if (($folderInfo['groups'][$groupId]['permissions'] ?? 0) != $permissions) {
+    if (($folderInfo->groups[$groupId]['permissions'] ?? 0) != $permissions) {
       $this->setGroupPermissions($mountPoint, $groupId, $permissions);
     }
     $this->changeFolderManager($mountPoint, $groupId, self::MANAGER_TYPE_GROUP, $canManage);
@@ -313,17 +318,20 @@ class GroupFoldersServiceNC32
    * @param string $groupId
    *
    * @return void
+   *
+   * @throws RuntimeException
    */
   public function removeGroupFromFolder(string $mountPoint, string $groupId):void
   {
     // REMOVE GROUP
     // DELETE BASE_URL/groupfolders/folders/4/groups/GROUP_ID
+    /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
-    if (empty($folderInfo)) {
+    if ($folderInfo === null) {
       throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot remove group "%2$s".', [ $mountPoint, $groupId ]));
     }
-    $this->folderManager->removeApplicableGroup($folderInfo['id'], $groupId);
-    unset($folderInfo[$mountPoint]['groups'][$groupId]);
+    $this->folderManager->removeApplicableGroup($folderInfo->id, $groupId);
+    $this->getFolderById($folderInfo->id); // update cache
   }
 
   /**
@@ -336,6 +344,8 @@ class GroupFoldersServiceNC32
    * @param bool $canManage
    *
    * @return void
+   *
+   * @throws RuntimeException
    */
   private function changeFolderManager(string $mountPoint, string $managerId, string $type, bool $canManage):void
   {
@@ -345,16 +355,17 @@ class GroupFoldersServiceNC32
     // POST BASEURL/groupfolders/folders/4/manageACL
     // [ mappingType => MANAGER_TYPE, mappingId => MANAGER_ID, manageAcl=> 1 ]
     //
+    /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
-    if (empty($folderInfo)) {
+    if ($folderInfo === null) {
       throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot modify manager "%2$s".', [ $mountPoint, $managerId ]));
     }
 
-    $this->logDebug('FOLDER INFO ' . print_r($folderInfo, true));
+    // $this->logDebug('FOLDER INFO ' . print_r($folderInfo->toArray(), true));
 
     // first check if anything needs to be done
-    $aclEnabled = !!($folderInfo['acl'] ?? false);
-    $isManager = 0 < count(array_filter($folderInfo['manage'] ?? [], function($manager) use ($managerId, $type) {
+    $aclEnabled = !!($folderInfo->acl ?? false);
+    $isManager = 0 < count(array_filter($folderInfo->manage ?? [], function(array $manager) use ($managerId, $type) {
       return $manager['type'] == $type && $manager['id'] == $managerId;
     }));
 
@@ -362,7 +373,7 @@ class GroupFoldersServiceNC32
       return;
     }
 
-    $folderId = $folderInfo['id'];
+    $folderId = $folderInfo->id;
     if (!$aclEnabled) {
       $this->folderManager->setFolderACL($folderId, true);
     }
@@ -411,19 +422,22 @@ class GroupFoldersServiceNC32
    * @param int $permissions
    *
    * @return void
+   *
+   * @throws RuntimeException
    */
   public function setGroupPermissions(string $mountPoint, string $groupId, int $permissions):void
   {
     // SET PERMISSIONS
     // POST BASE_URL/groupfolders/folders/4/groups/GROUP_ID
     // DATA permissions: PERM-BITFIELD
+    /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
-    if (empty($folderInfo)) {
+    if (null === $folderInfo) {
       throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot set permissions for group "%2$s".', [ $mountPoint, $groupId ]));
     }
-    if (($folderInfo['groups'][$groupId]['permissions'] ?? 0) != $permissions) {
-      $this->folderManager->setGroupPermissions($folderInfo['id'], $groupId, $permissions);
-      $this->sharedFolders[$mountPoint]['groups'][$groupId]['permissions'] = $permissions;
+    if (($folderInfo->groups[$groupId]['permissions'] ?? 0) != $permissions) {
+      $this->folderManager->setGroupPermissions($folderInfo->id, $groupId, $permissions);
+      $this->getFolderById($folderInfo->id);
     }
   }
 
@@ -443,32 +457,36 @@ class GroupFoldersServiceNC32
    * as well.
    *
    * @return void
+   *
+   * @throws RuntimeException
    */
   public function changeMountPoint(string $mountPoint, string $targetMountPoint, bool $moveChildren = true):void
   {
     if ($mountPoint == $targetMountPoint) {
       return;
     }
+    /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
-    if (empty($folderInfo)) {
+    if (null === $folderInfo) {
       throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot change its mount-point to "%2$s".', [ $mountPoint,  ]));
     }
     // POST BASE_URL/groupfolders/folders/FOLDER_ID/mountpoint
     // DATA [ mountpoint => NEW_MOUNT_POINT ]
 
-    $this->folderManager->renameFolder($folderInfo['id'], $targetMountPoint);
+    $this->folderManager->renameFolder($folderInfo->id, $targetMountPoint);
     $this->sharedFolders[$targetMountPoint] = $this->sharedFolders[$mountPoint];
     unset($this->sharedFolders[$mountPoint]);
-    $this->sharedFolders[$targetMountPoint]['mount_point'] = $targetMountPoint;
+    $this->getFolderById($folderInfo->id);
 
     if ($moveChildren) {
       $children = $this->searchFolders('|^' . $mountPoint . '/.*$|');
+      /** @var FolderWithMappingsAndCache $childInfo */
       foreach ($children as $childInfo) {
-        $oldChildMount = $childInfo['mount_point'];
+        $oldChildMount = $childInfo->mountPoint;
         $newChildMount = $targetMountPoint . substr($oldChildMount, strlen($mountPoint));
         try {
           $this->changeMountPoint($oldChildMount, $newChildMount, moveChildren: false);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
           $this->logException($t, 'Failed to move child mount from ' . $oldChildMount . ' to ' . $newChildMount);
         }
       }
