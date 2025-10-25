@@ -31,13 +31,13 @@ use OCP\Files\IRootFolder;
 
 use OCA\GroupFolders\Folder\FolderManager;
 use OCA\GroupFolders\Folder\FolderWithMappingsAndCache;
-use OCA\GroupFolders\Mount\MountProvider;
+use OCA\GroupFolders\Mount\FolderStorageManager;
 
 /**
  * Mis-use the internal services of the groupfolders app in order to
  * automatically generate group-shared folder structures.
  */
-class GroupFoldersService
+class GroupFoldersServiceNC32
 {
   use \OCA\RotDrop\Toolkit\Traits\LoggerTrait;
 
@@ -88,7 +88,7 @@ class GroupFoldersService
     protected LoggerInterface $logger,
     private IRootFolder $rootFolder,
     private FolderManager $folderManager,
-    private MountProvider $mountProvider,
+    private FolderStorageManager $folderStorageManager,
     private ?IL10N $l = null,
   ) {
   }
@@ -115,7 +115,7 @@ class GroupFoldersService
    */
   private function fetchFolders():void
   {
-    $folders = $this->folderManager->getAllFoldersWithSize($this->getRootFolderStorageId());
+    $folders = $this->folderManager->getAllFoldersWithSize();
     $this->sharedFolders = [];
     foreach ($folders as $folderInfo) {
       if ($folderInfo instanceof FolderWithMappingsAndCache) {
@@ -200,8 +200,7 @@ class GroupFoldersService
   public function deleteFolders(string $mountRegexp):void
   {
     foreach ($this->searchFolders($mountRegexp) as $folderInfo) {
-      $folder = $this->mountProvider->getFolder($folderInfo['id']);
-      $folder->delete();
+      $this->folderStorageManager->deleteStoragesForFolder($folderInfo['id']);
       $this->folderManager->removeFolder($folderInfo['id']);
       unset($this->sharedFolders[$folderInfo['mount_point']]);
     }
@@ -216,7 +215,7 @@ class GroupFoldersService
    */
   public function getFolderById(int $id):array
   {
-    $folderInfo = $this->folderManager->getFolder($id, $this->getRootFolderStorageId());
+    $folderInfo = $this->folderManager->getFolder($id);
     if (empty($folderInfo)) {
       throw new RuntimeException($this->l->t('Shared folder with id "%1$s" does not exist.', [ $id ]));
     }
@@ -474,11 +473,5 @@ class GroupFoldersService
         }
       }
     }
-  }
-
-  /** @return null|int The storage id of the root folder. */
-  private function getRootFolderStorageId():?int
-  {
-    return $this->rootFolder->getMountPoint()->getNumericStorageId();
   }
 }

@@ -37,7 +37,7 @@ use OCA\GroupFolders\Mount\MountProvider;
  * Mis-use the internal services of the groupfolders app in order to
  * automatically generate group-shared folder structures.
  */
-class GroupFoldersService
+class GroupFoldersServicePreNC32
 {
   use \OCA\RotDrop\Toolkit\Traits\LoggerTrait;
 
