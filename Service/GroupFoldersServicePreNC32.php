@@ -89,24 +89,10 @@ class GroupFoldersServicePreNC32
     private IRootFolder $rootFolder,
     private FolderManager $folderManager,
     private MountProvider $mountProvider,
-    private ?IL10N $l = null,
+    private IL10N $l,
   ) {
   }
   // phpcs:enable Squiz.Commenting.FunctionComment.Missing
-
-  /**
-   * Set the localization to use.
-   *
-   * @param IL10N $l10n
-   *
-   * @return GroupFOldersService $this.
-   */
-  public function setL10N(IL10N $l10n):GroupFoldersService
-  {
-    $this->l = $l10n;
-
-    return $this;
-  }
 
   /**
    * Fetch and cache all shared folders from the groupfolders app.
