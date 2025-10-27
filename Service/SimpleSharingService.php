@@ -67,13 +67,14 @@ class SimpleSharingService
    * on the given date. Default to null.
    *
    * @param null|false|string $password Optional password. If \false ignore,
-   * if null create a passwordless share.
+   * if null create a passwordless share. The share password is updated even
+   * if $noCreate is \true.
    *
    * @param bool $noCreate Do not create a new share, but return an existing
    * share if it exists.
    *
    * @param null|string $newShareOwner If given try to modify the share to use
-   * the new owner.
+   * the new owner. The share-owner is corrected event if $noCreate is \true.
    *
    * @return null|array The absolute URLs for the share or null.
    * ```
@@ -127,21 +128,27 @@ class SimpleSharingService
           }
         }
 
-        if ($password !== false
-            && $share->getPassword() !== $password // both null is ok
-            && !$this->shareManager->checkPassword($share, $password)) {
+        // check permissions
+        if ($share->getPermissions() !== $sharePerms) {
           $share = null;
           continue;
         }
 
-        // check permissions
-        if ($share->getPermissions() === $sharePerms) {
-          if ($newShareOwner !== null && $newShareOwner !== $shareOwner) {
-            $share->setShareOwner($newShareOwner);
-            $share->setSharedBy($newShareOwner);
-            $this->shareManager->updateShare($share);
-          }
+        if ($newShareOwner !== null && $newShareOwner !== $shareOwner) {
+          $share->setShareOwner($newShareOwner);
+          $share->setSharedBy($newShareOwner);
+          $this->shareManager->updateShare($share);
         }
+
+
+        if ($password !== false
+            && $share->getPassword() !== $password // both null is ok
+            && !$this->shareManager->checkPassword($share, $password)) {
+          $share->setPassword($password);
+          $this->shareManager->updateShare($share);
+        }
+
+        break;
       }
 
       if ($share === null) {
