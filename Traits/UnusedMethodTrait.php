@@ -3,7 +3,7 @@
  * A collection of reusable traits classes for Nextcloud apps.
  *
  * @author Claus-Justus Heine <himself@claus-justus-heine.de>
- * @copyright 2022, 2023, 2025, 2026 Claus-Justus Heine <himself@claus-justus-heine.de>
+ * @copyright 2026 Claus-Justus Heine <himself@claus-justus-heine.de>
  * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,29 +19,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
 
 namespace OCA\RotDrop\Toolkit\Traits;
 
+use BadMethodCallException;
+
 /**
- * Supply a dummy t() function in order to inject strings into the translation
- * machinery.
- *
- * @SuppressWarnings(PHPMD.ShortMethodName)
+ * Define an unused-on-purpose method e.g. to silence PHPUnit "No expectations
+ * configured" warnings.
  */
-trait FakeTranslationTrait
+trait UnusedMethodTrait
 {
+  public const UNUSED_METHOD_NOT_TO_BE_CALLED_NAME = 'unusedMethodNotToBeCalled';
+
   /**
-   * @param string $text
+   * E.g. for use in \PHPUnit\Framework\TestCase::expects().
    *
-   * @param string|array $parameters
-   *
-   * @return string
+   * @return void
    */
-  protected static function t(string $text, string|array $parameters = []):string
+  public function unusedMethodNotToBeCalled(): void
   {
-    if (!is_array($parameters)) {
-      $parameters = [ $parameters ];
-    }
-    return empty($parameters) ? $text : vsprintf($text, $parameters);
+    throw new BadMethodCallException('This method must not be called');
   }
 }
