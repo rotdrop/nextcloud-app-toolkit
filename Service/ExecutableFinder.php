@@ -24,12 +24,14 @@ namespace OCA\RotDrop\Toolkit\Service;
 
 use Symfony\Component\Process\ExecutableFinder as ExecutableFinderBackend;
 
-use Psr\Log\LoggerInterface as ILogger;
+use Psr\Log\LoggerInterface;
 use OCP\IL10N;
 use OCP\IMemcacheTTL;
 use OCP\ICacheFactory;
 
 use OCA\RotDrop\Toolkit\Exceptions;
+
+echo __DIR__ . PHP_EOL;
 
 /**
  * Find an executable and cache the result.
@@ -37,6 +39,7 @@ use OCA\RotDrop\Toolkit\Exceptions;
 class ExecutableFinder
 {
   use \OCA\RotDrop\Toolkit\Traits\LoggerTrait;
+  use \OCA\RotDrop\Toolkit\Traits\FakeTranslationTrait;
 
   /**
    * @var int
@@ -60,19 +63,19 @@ class ExecutableFinder
   /**
    * @param ICacheFactory $cacheFactory
    *
+   * @param ?IL10N $l
+   *
    * @param ExecutableFinderBackend $executableFinder
    *
-   * @param IL10N $l
-   *
-   * @param ILogger $logger
+   * @param LoggerInterface $logger
    *
    * @param string $appName
    */
   public function __construct(
     ICacheFactory $cacheFactory,
+    protected ?IL10N $l,
     protected ExecutableFinderBackend $executableFinder,
-    protected IL10N $l,
-    protected ILogger $logger,
+    protected LoggerInterface $logger,
   ) {
     $this->memoryCache = $cacheFactory->createLocking();
     if (!($this->memoryCache instanceof IMemcacheTTL)) {
@@ -134,7 +137,12 @@ class ExecutableFinder
         if (empty($executable)) {
           $this->executables[$program] = [
             'exception' => new Exceptions\EnduserNotificationException(
-              $this->l->t('Please install the "%s" program on the server.', $program)),
+              self::t(
+                'Please install the "%s" program on the server.',
+                $program,
+                $this->l,
+              ),
+            ),
             'path' => null,
           ];
           $this->memoryCache->remove($cacheKey);
