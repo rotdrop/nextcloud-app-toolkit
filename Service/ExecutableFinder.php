@@ -31,8 +31,6 @@ use OCP\ICacheFactory;
 
 use OCA\RotDrop\Toolkit\Exceptions;
 
-echo __DIR__ . PHP_EOL;
-
 /**
  * Find an executable and cache the result.
  */
