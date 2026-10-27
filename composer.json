@@ -1,0 +1,14 @@
+{
+  "name": "rotdrop/nextcloud-app-toolkit",
+  "description": "Reusable PHP toolkit for Nextcloud apps",
+  "type": "library",
+  "license": "AGPL-3.0-or-later",
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "OCA\\RotDrop\\Toolkit\\": ""
+    }
+  }
+}
