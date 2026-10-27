@@ -26,11 +26,11 @@
   </testsuites>
   <source ignoreIndirectDeprecations="true" restrictNotices="true" restrictWarnings="true">
     <include>
-      <directory>Common</directory>
-      <directory>DTO</directory>
-      <directory>Doctrine</directory>
-      <directory>Exceptions</directory>
-      <directory>Traits</directory>
+      <directory>src/Common</directory>
+      <directory>src/DTO</directory>
+      <directory>src/Doctrine</directory>
+      <directory>src/Exceptions</directory>
+      <directory>src/Traits</directory>
     </include>
   </source>
 </phpunit>

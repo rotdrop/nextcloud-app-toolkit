@@ -20,7 +20,7 @@ if ($argc < 2) {
 }
 
 $outputFile = $argv[1];
-$sourceDir = realpath($argv[2] ?? dirname(__DIR__));
+$sourceDir = realpath($argv[2] ?? dirname(__DIR__) . '/src');
 if ($sourceDir === false || !is_dir($sourceDir)) {
   fwrite(STDERR, "Source directory does not exist.\n");
   exit(1);

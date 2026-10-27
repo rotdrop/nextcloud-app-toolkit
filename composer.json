@@ -18,7 +18,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "OCA\\RotDrop\\Toolkit\\": ""
+      "OCA\\RotDrop\\Toolkit\\": "src/"
     }
   },
   "autoload-dev": {

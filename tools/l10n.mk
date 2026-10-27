@@ -20,5 +20,5 @@ APP_TOOLKIT_L10N_DEST ?= $(ABSSRCDIR)/l10n-sources/toolkit-strings.php
 
 #@@ Generate the toolkit's string catalogue for the translation tool, commit the result.
 toolkit-l10n:
-	$(PHP) $(APP_TOOLKIT_DIR)/tools/extract-l10n.php $(APP_TOOLKIT_L10N_DEST) $(APP_TOOLKIT_DIR)
+	$(PHP) $(APP_TOOLKIT_DIR)/tools/extract-l10n.php $(APP_TOOLKIT_L10N_DEST) $(APP_TOOLKIT_DIR)/src
 .PHONY: toolkit-l10n
