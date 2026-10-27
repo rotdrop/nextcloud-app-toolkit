@@ -20,13 +20,13 @@ if ($argc < 2) {
 }
 
 $outputFile = $argv[1];
-$sourceDir = realpath($argv[2] ?? dirname(__DIR__) . '/src');
+$sourceDir = realpath($argv[2] ?? dirname(__DIR__, 2) . '/src');
 if ($sourceDir === false || !is_dir($sourceDir)) {
   fwrite(STDERR, "Source directory does not exist.\n");
   exit(1);
 }
 
-$skipDirs = [ 'tools', 'vendor', 'node_modules', 'l10n' ];
+$skipDirs = [ 'build-tools', 'vendor', 'node_modules', 'l10n' ];
 
 /** Decode a PHP string literal token without evaluating code, null if dynamic. */
 function decodeLiteral(string $literal): ?string
@@ -155,7 +155,7 @@ $content = <<<'EOF'
 
 /*
  * GENERATED FILE, DO NOT EDIT. Re-generate by running the l10n target of
- * the nextcloud-app-toolkit, see tools/l10n.mk.
+ * the nextcloud-app-toolkit, see build-tools/makefile/l10n.mk.
  *
  * This file is never executed. It only makes the translatable strings of
  * the toolkit visible to the Nextcloud translation tool, which does not

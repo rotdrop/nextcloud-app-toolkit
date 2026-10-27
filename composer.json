@@ -14,7 +14,7 @@
     "nextcloud/ocp": "dev-master"
   },
   "bin": [
-    "tools/extract-l10n.php"
+    "build-tools/scripts/extract-l10n.php"
   ],
   "autoload": {
     "psr-4": {
