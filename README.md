@@ -48,7 +48,7 @@ Include the Makefile fragment in the app's `Makefile`:
 
 ```makefile
 ABSSRCDIR = $(CURDIR)
-include $(ABSSRCDIR)/vendor/rotdrop/nextcloud-app-toolkit/build-tools/makefile/l10n.mk
+include $(ABSSRCDIR)/vendor/rotdrop/nextcloud-app-toolkit/tools/l10n.mk
 ```
 
 and run `make toolkit-l10n` before creating the POT files. This writes
@@ -82,17 +82,3 @@ database provider, ...) which formerly lived in
 They keep their `OCA\RotDrop\Tests` namespace and are registered in
 `autoload-dev`. Most of them need a Nextcloud server environment
 (`OC\` classes) and are not used by the standalone unit tests.
-
-## Build tools
-
-`build-tools/` contains Makefile fragments and scripts which are only used
-while building an app, they are not part of the runtime autoload:
-
-- `build-tools/makefile/*.mk`: fragments (composer, npm, setup, TypeScript
-  types and app config, l10n). Include them from the app's Makefile, e.g.
-  `include $(ABSSRCDIR)/vendor/rotdrop/nextcloud-app-toolkit/build-tools/makefile/setup.mk`.
-  Override `APP_TOOLKIT_DIR` / `APP_TOOLKIT_BUILD_DIR` before the include if
-  the toolkit is not located in `vendor/`.
-- `build-tools/scripts/`: helper scripts, `php-to-typescript` and a nested
-  `composer.json` with the dependencies needed only for the build.
-- `build-tools/templates/`: templates used by the fragments.
