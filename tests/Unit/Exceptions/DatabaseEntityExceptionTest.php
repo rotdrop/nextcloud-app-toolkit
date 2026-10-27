@@ -32,6 +32,8 @@ use OCA\RotDrop\Toolkit\Exceptions;
  * Test the Exceptions\DatabaseEntityException class and some of its child
  * classes.
  */
+#[Attributes\CoversClass(Exceptions\DatabaseEntityNotUniqueException::class)]
+#[Attributes\CoversClass(Exceptions\DatabaseInconsistentValueException::class)]
 #[Attributes\CoversClass(Exceptions\DatabaseEntityException::class)]
 #[Attributes\CoversClass(Exceptions\DatabaseEntityNotFoundException::class)]
 #[Attributes\CoversClass(Exceptions\DatabaseMissingIdentifierException::class)]
@@ -101,6 +103,50 @@ class DatabaseEntityExceptionTest extends TestCase
       $this->assertEquals(self::PREVIOUS, $e->getPrevious());
       $this->assertEquals(self::ENTITY_NAME, $e->entityClassName);
       $this->assertEquals(self::IDENTIFIER, $e->incompleteIdentifier);
+    }
+  }
+
+  /** @return void */
+  public function testDatabaseEntityNotUniqueException(): void
+  {
+    try {
+      throw new Exceptions\DatabaseEntityNotUniqueException(
+        message: self::MESSAGE,
+        code: self::CODE,
+        previous: self::PREVIOUS,
+        entityClassName: self::ENTITY_NAME,
+        criteria: self::IDENTIFIER,
+      );
+    } catch (Exceptions\DatabaseEntityException $e) {
+      $this->assertEquals(self::MESSAGE, $e->getMessage());
+      $this->assertEquals(self::CODE, $e->getCode());
+      $this->assertEquals(self::PREVIOUS, $e->getPrevious());
+      $this->assertEquals(self::ENTITY_NAME, $e->entityClassName);
+      $this->assertEquals(self::IDENTIFIER, $e->criteria);
+    }
+  }
+
+  /** @return void */
+  public function testDatabaseEntityInconsistenValueException(): void
+  {
+    try {
+      throw new Exceptions\DatabaseInconsistentValueException(
+        message: self::MESSAGE,
+        code: self::CODE,
+        previous: self::PREVIOUS,
+        entityClassName: self::ENTITY_NAME,
+        field: self::FIELD,
+        expected: self::EXPECTED,
+        actual: self::ACTUAL,
+      );
+    } catch (Exceptions\DatabaseEntityException $e) {
+      $this->assertEquals(self::MESSAGE, $e->getMessage());
+      $this->assertEquals(self::CODE, $e->getCode());
+      $this->assertEquals(self::PREVIOUS, $e->getPrevious());
+      $this->assertEquals(self::ENTITY_NAME, $e->entityClassName);
+      $this->assertEquals(self::FIELD, $e->field);
+      $this->assertEquals(self::EXPECTED, $e->expected);
+      $this->assertEquals(self::ACTUAL, $e->actual);
     }
   }
 }
