@@ -29,7 +29,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use OCA\RotDrop\Toolkit\Common\AbstractDecimalRational;
-use OCA\RotDrop\Toolkit\Tests\DeprecationException;
+use OCA\RotDrop\Tests\DeprecationException;
 
 /** Unit-test class. */
 class DecimalRationalTestClass extends AbstractDecimalRational

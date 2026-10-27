@@ -35,7 +35,7 @@ use OCA\RotDrop\Toolkit\Doctrine\DBAL\Types\DecimalRationalMonetaryType as Datab
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Exception\SerializationFailed;
-use OCA\RotDrop\Toolkit\Tests\DeprecationException;
+use OCA\RotDrop\Tests\DeprecationException;
 
 /** Test the given number type class */
 #[Attributes\CoversClass(DatabaseType::class)]

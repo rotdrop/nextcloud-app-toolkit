@@ -29,7 +29,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use OCA\RotDrop\Toolkit\Common\DecimalRationalMonetary as NumberType;
-use OCA\RotDrop\Toolkit\Tests\DeprecationException;
+use OCA\RotDrop\Tests\DeprecationException;
 
 /** Test the given number type class */
 #[Attributes\CoversClass(NumberType::class)]

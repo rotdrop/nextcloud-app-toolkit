@@ -34,7 +34,7 @@ use OCA\RotDrop\Toolkit\Doctrine\DBAL\Types\AbstractDecimalRationalType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Exception\SerializationFailed;
-use OCA\RotDrop\Toolkit\Tests\DeprecationException;
+use OCA\RotDrop\Tests\DeprecationException;
 
 /** Unit-test class. */
 class DecimalRationalTestClass extends AbstractDecimalRational

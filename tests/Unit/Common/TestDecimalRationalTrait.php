@@ -25,7 +25,7 @@
 namespace OCA\RotDrop\Toolkit\Tests\Unit\Common;
 
 use OCA\RotDrop\Toolkit\Common\AbstractDecimalRational;
-use OCA\RotDrop\Toolkit\Tests\DeprecationException;
+use OCA\RotDrop\Tests\DeprecationException;
 
 /** Test quasi-fixed-point numbers. */
 trait TestDecimalRationalTrait

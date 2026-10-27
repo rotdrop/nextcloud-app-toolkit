@@ -75,3 +75,10 @@ composer test
 The unit tests live in `tests/Unit` and mirror the source layout. Tests
 which need a running Nextcloud server or a database are not part of this
 package.
+
+`tests/lib` contains the shared PHPUnit helper classes (mock provider,
+database provider, ...) which formerly lived in
+[`rotdrop/nextcloud-app-phpunit`](https://github.com/rotdrop/nextcloud-app-phpunit).
+They keep their `OCA\RotDrop\Tests` namespace and are registered in
+`autoload-dev`. Most of them need a Nextcloud server environment
+(`OC\` classes) and are not used by the standalone unit tests.

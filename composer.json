@@ -24,6 +24,7 @@
   "autoload-dev": {
     "psr-4": {
       "OCA\\RotDrop\\Toolkit\\Tests\\": "tests/",
+      "OCA\\RotDrop\\Tests\\": "tests/lib/",
       "OCP\\": "vendor/nextcloud/ocp/OCP/",
       "NCU\\": "vendor/nextcloud/ocp/NCU/"
     }
