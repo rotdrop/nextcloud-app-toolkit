@@ -67,9 +67,11 @@ PHPUnit is installed in its own `vendor-bin/phpunit` namespace by means of
 [`bamarni/composer-bin-plugin`](https://github.com/bamarni/composer-bin-plugin):
 
 ```sh
-composer install   # also installs vendor-bin/*
-composer test
+make test    # install everything and run the test-suite
+make clean   # remove vendor dirs, caches and composer.lock files
 ```
+
+Alternatively run `composer install && composer test`.
 
 The unit tests live in `tests/Unit` and mirror the source layout. Tests
 which need a running Nextcloud server or a database are not part of this
