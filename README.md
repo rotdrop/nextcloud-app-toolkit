@@ -67,8 +67,7 @@ PHPUnit is installed in its own `vendor-bin/phpunit` namespace by means of
 [`bamarni/composer-bin-plugin`](https://github.com/bamarni/composer-bin-plugin):
 
 ```sh
-composer install
-composer bin phpunit install
+composer install   # also installs vendor-bin/*
 composer test
 ```
 
