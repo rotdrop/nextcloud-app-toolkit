@@ -6,6 +6,13 @@
   "require": {
     "php": ">=8.1"
   },
+  "require-dev": {
+    "bamarni/composer-bin-plugin": "^1.8",
+    "doctrine/dbal": "^4.0",
+    "markrogoyski/math-php": "^2.0",
+    "nesbot/carbon": "^3.0",
+    "nextcloud/ocp": "dev-master"
+  },
   "bin": [
     "tools/extract-l10n.php"
   ],
@@ -13,5 +20,28 @@
     "psr-4": {
       "OCA\\RotDrop\\Toolkit\\": ""
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "OCA\\RotDrop\\Toolkit\\Tests\\": "tests/",
+      "OCP\\": "vendor/nextcloud/ocp/OCP/",
+      "NCU\\": "vendor/nextcloud/ocp/NCU/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "bamarni/composer-bin-plugin": true
+    }
+  },
+  "extra": {
+    "bamarni-bin": {
+      "bin-links": true,
+      "forward-command": false,
+      "target-directory": "vendor-bin"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }

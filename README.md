@@ -60,3 +60,18 @@ show up as a diff. Without `make`, call
 Only string literals are extracted, calls with dynamic arguments are
 reported as warnings. Consider adding the output directory to the app's
 `.gitattributes` with `export-ignore` to keep it out of release archives.
+
+## Development
+
+PHPUnit is installed in its own `vendor-bin/phpunit` namespace by means of
+[`bamarni/composer-bin-plugin`](https://github.com/bamarni/composer-bin-plugin):
+
+```sh
+composer install
+composer bin phpunit install
+composer test
+```
+
+The unit tests live in `tests/Unit` and mirror the source layout. Tests
+which need a running Nextcloud server or a database are not part of this
+package.
