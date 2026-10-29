@@ -69,7 +69,17 @@ class AppInfoService
       return self::$appFolderPath;
     }
 
-    // Extract the directory nesting level from the class-name, so this counts
+    // When installed as composer package (possibly namespace-wrapped) the
+    // nesting of the class name does not reflect the position inside the app
+    // folder, so first look for the info file in the parent directories.
+    for ($dir = __DIR__, $parent = dirname($dir); $parent !== $dir; $dir = $parent, $parent = dirname($dir)) {
+      if (is_file($dir . Constants::PATH_SEP . Constants::INFO_FILE)) {
+        self::$appFolderPath = $dir;
+        return self::$appFolderPath;
+      }
+    }
+
+    // Fallback: extract the directory nesting level from the class-name, so this counts
     // the part after OCA\APP_NAME_SPACE. Thus OCA\APP_NAME_SPACE\AppInfo\Application.php
     // yields a nesting-level of 2 and yes, the info file is
     // lib/AppInfo/../../appinfo/info.xml
