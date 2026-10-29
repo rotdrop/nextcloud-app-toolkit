@@ -37,7 +37,6 @@ use OCA\RotDrop\Toolkit\Exceptions;
 class ExecutableFinder
 {
   use \OCA\RotDrop\Toolkit\Traits\LoggerTrait;
-  use \OCA\RotDrop\Toolkit\Traits\FakeTranslationTrait;
 
   /**
    * @var int
@@ -61,7 +60,7 @@ class ExecutableFinder
   /**
    * @param ICacheFactory $cacheFactory
    *
-   * @param ?IL10N $l
+   * @param IL10N $l
    *
    * @param ExecutableFinderBackend $executableFinder
    *
@@ -69,7 +68,7 @@ class ExecutableFinder
    */
   public function __construct(
     ICacheFactory $cacheFactory,
-    protected ?IL10N $l,
+    protected IL10N $l,
     protected ExecutableFinderBackend $executableFinder,
     protected LoggerInterface $logger,
   ) {
@@ -133,11 +132,7 @@ class ExecutableFinder
         if (empty($executable)) {
           $this->executables[$program] = [
             'exception' => new Exceptions\EnduserNotificationException(
-              self::t(
-                'Please install the "%s" program on the server.',
-                $program,
-                $this->l,
-              ),
+              $this->l->t('Please install the "%s" program on the server.', $program),
             ),
             'path' => null,
           ];

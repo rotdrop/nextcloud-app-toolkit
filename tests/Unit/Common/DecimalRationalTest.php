@@ -3,7 +3,7 @@
  * A collection of reusable traits classes for Nextcloud apps.
  *
  * @author Claus-Justus Heine <himself@claus-justus-heine.de>
- * @copyright 2022, 2023, 2025, 2026 Claus-Justus Heine <himself@claus-justus-heine.de>
+ * @copyright 2026 Claus-Justus Heine <himself@claus-justus-heine.de>
  * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,36 +18,31 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
-namespace OCA\RotDrop\Toolkit\Traits;
-
-use \OCP\IL10N;
-
-/**
- * Supply a dummy t() function in order to inject strings into the translation
- * machinery.
  *
- * @SuppressWarnings(PHPMD.ShortMethodName)
+ * @phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
  */
-trait FakeTranslationTrait
+
+namespace OCA\RotDrop\Toolkit\Tests\Unit\Common;
+
+use PHPUnit\Framework\Attributes;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+use OCA\RotDrop\Toolkit\Common\AbstractDecimalRational;
+use OCA\RotDrop\Tests\DeprecationException;
+
+/** Unit-test class. */
+class DecimalRationalTestClass extends AbstractDecimalRational
 {
-  /**
-   * @param string $text
-   *
-   * @param string|array $parameters
-   *
-   * @param ?IL10N $l
-   *
-   * @return string
-   */
-  protected static function t(string $text, string|array $parameters = [], ?IL10N $l = null):string
-  {
-    if (!is_array($parameters)) {
-      $parameters = [ $parameters ];
-    }
-    return $l
-      ? $l->t($text, $parameters)
-      : (empty($parameters) ? $text : vsprintf($text, $parameters));
-  }
+  public const PRECISION = 7;
+  public const SCALE = 4;
+}
+
+/** Test the given number type class */
+#[Attributes\CoversClass(AbstractDecimalRational::class)]
+class DecimalRationalTest extends TestCase
+{
+  use TestDecimalRationalTrait;
+
+  private const NUMBER_CLASS = DecimalRationalTestClass::class;
 }
