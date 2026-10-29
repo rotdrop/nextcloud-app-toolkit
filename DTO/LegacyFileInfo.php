@@ -54,7 +54,7 @@ class LegacyFileInfo extends AbstractDTO
     public readonly int $lastmod,
     public readonly string $mime,
     public readonly int $size,
-    #[TSAttributes\LiteralTypeScriptType('FileType')]
+    #[PhpToTypeScript\Attributes\LiteralTypeScriptType('FileType')]
     public readonly string $type,
     public readonly bool $hasPreview,
     public readonly int $permissions,
