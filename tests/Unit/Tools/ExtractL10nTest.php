@@ -82,9 +82,9 @@ PHP);
   public function testExactPathsAndPrefixedPathsExcludeFiles(): void
   {
     $ignoreFile = $this->directory . '/.l10nignore';
-    file_put_contents($ignoreFile, " # comment /rotdrop/nextcloud-vue-components/src/Keep.php\r\n\r\n"
-      . " /app/vendor/rotdrop/nextcloud-vue-components/src/Skip.php \r\n"
-      . "/app/vendor/rotdrop/nextcloud-vue-components/src/Nested/Skip.php\r\n"
+    file_put_contents($ignoreFile, " # comment /rotdrop/nextcloud-app-toolkit/src/Keep.php\r\n\r\n"
+      . " /app/vendor/rotdrop/nextcloud-app-toolkit/src/Skip.php \r\n"
+      . "/app/vendor/rotdrop/nextcloud-app-toolkit/src/Nested/Skip.php\r\n"
       . "unrelated/Keep.php\r\nsrc/*.php\r\nsrc/Nested/\r\n");
     [$status, $errors] = $this->extract($ignoreFile);
     self::assertSame(0, $status, $errors);
@@ -111,7 +111,7 @@ PHP);
   public function testExclusionMatchesOnlyTheExactRelativePath(): void
   {
     $ignoreFile = $this->directory . '/.l10nignore';
-    file_put_contents($ignoreFile, 'vendor/rotdrop/nextcloud-vue-components/src/Skip.php');
+    file_put_contents($ignoreFile, 'vendor/rotdrop/nextcloud-app-toolkit/src/Skip.php');
     [$status, $errors] = $this->extract($ignoreFile);
     self::assertSame(0, $status, $errors);
     $content = file_get_contents($this->directory . '/catalogue.php');
@@ -124,7 +124,7 @@ PHP);
   {
     $ignoreFile = $this->directory . '/.l10nignore';
     file_put_contents($ignoreFile, "src/Skip.php\n"
-      . "vendor/rotdrop/nextcloud-app-toolkit/src/Skip.php\n"
+      . "vendor/rotdrop/nextcloud-vue-components/src/Skip.php\n"
       . "vendor/rotdrop/other-package/src/Nested/Skip.php\n");
     [$status, $errors] = $this->extract($ignoreFile);
     self::assertSame(0, $status, $errors);
