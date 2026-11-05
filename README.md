@@ -74,8 +74,8 @@ make clean   # remove vendor dirs, caches and composer.lock files
 Alternatively run `composer install && composer test`.
 
 The PHPUnit GitHub Actions workflow runs the same commands with PHP 8.4
-on pushes and pull requests to `composer-package`. It can also be started
-manually.
+on pushes to `main` and when pull requests are opened, updated with new
+commits, reopened, or edited. It can also be started manually.
 
 The unit tests live in `tests/Unit` and mirror the source layout. Tests
 which need a running Nextcloud server or a database are not part of this

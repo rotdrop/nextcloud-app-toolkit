@@ -3,10 +3,9 @@ name: PHPUnit
 on:
   push:
     branches:
-      - composer-package
+      - main
   pull_request:
-    branches:
-      - composer-package
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 permissions:
