@@ -129,7 +129,7 @@ foreach ($iterator as $file) {
       continue;
     }
     $sourceLocation = '@rotdrop/nextcloud-app-toolkit/src/' .
-      str_replace(DIRECTORY_SEPARATOR, '/', substr($file->getPathname(), strlen($sourceDir) + 1));
+      str_replace(DIRECTORY_SEPARATOR, '/', substr($file->getPathname(), strlen($sourceDir) + 1)) . ':' . $line;
     if ($token[1] === 't') {
       $singular[$first][$sourceLocation] = true;
       continue;
