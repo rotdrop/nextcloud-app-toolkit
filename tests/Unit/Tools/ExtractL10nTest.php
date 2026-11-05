@@ -82,8 +82,9 @@ PHP);
   public function testExactPathsAndPrefixedPathsExcludeFiles(): void
   {
     $ignoreFile = $this->directory . '/.l10nignore';
-    file_put_contents($ignoreFile, " # comment\r\n\r\n src/Skip.php \r\n"
-      . "/app/vendor/rotdrop/nextcloud-app-toolkit/src/Nested/Skip.php\r\n"
+    file_put_contents($ignoreFile, " # comment /rotdrop/nextcloud-vue-components/src/Keep.php\r\n\r\n"
+      . " /app/vendor/rotdrop/nextcloud-vue-components/src/Skip.php \r\n"
+      . "/app/vendor/rotdrop/nextcloud-vue-components/src/Nested/Skip.php\r\n"
       . "unrelated/Keep.php\r\nsrc/*.php\r\nsrc/Nested/\r\n");
     [$status, $errors] = $this->extract($ignoreFile);
     self::assertSame(0, $status, $errors);
@@ -110,13 +111,26 @@ PHP);
   public function testExclusionMatchesOnlyTheExactRelativePath(): void
   {
     $ignoreFile = $this->directory . '/.l10nignore';
-    file_put_contents($ignoreFile, 'vendor/toolkit/src/Skip.php');
+    file_put_contents($ignoreFile, 'vendor/rotdrop/nextcloud-vue-components/src/Skip.php');
     [$status, $errors] = $this->extract($ignoreFile);
     self::assertSame(0, $status, $errors);
     $content = file_get_contents($this->directory . '/catalogue.php');
     self::assertStringNotContainsString("\$l->t('Skip');", $content);
     self::assertStringContainsString("\$l->t('Nested skip');", $content);
     self::assertStringContainsString('/src/Nested/Skip.php:', $content);
+  }
+
+  public function testOtherPackagePrefixesAndBareSourcePathsAreIgnored(): void
+  {
+    $ignoreFile = $this->directory . '/.l10nignore';
+    file_put_contents($ignoreFile, "src/Skip.php\n"
+      . "vendor/rotdrop/nextcloud-app-toolkit/src/Skip.php\n"
+      . "vendor/rotdrop/other-package/src/Nested/Skip.php\n");
+    [$status, $errors] = $this->extract($ignoreFile);
+    self::assertSame(0, $status, $errors);
+    $content = file_get_contents($this->directory . '/catalogue.php');
+    self::assertStringContainsString("\$l->t('Skip');", $content);
+    self::assertStringContainsString("\$l->t('Nested skip');", $content);
   }
 
   public function testMissingIgnoreFileFailsWithoutWritingCatalogue(): void

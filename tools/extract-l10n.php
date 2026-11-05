@@ -43,7 +43,7 @@ if (isset($argv[3])) {
     if ($entry === '' || $entry[0] === '#') {
       continue;
     }
-    if (preg_match('~(?:^|/)src/(.+)$~', $entry, $matches)) {
+    if (preg_match('~(?:^|/)rotdrop/nextcloud-vue-components/src/(.+)$~', $entry, $matches)) {
       $excludedFiles['src/' . $matches[1]] = true;
     }
   }
