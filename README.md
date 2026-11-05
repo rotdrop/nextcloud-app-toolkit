@@ -55,7 +55,17 @@ and run `make toolkit-l10n` before creating the POT files. This writes
 `l10n-sources/toolkit-strings.php` (override with
 `APP_TOOLKIT_L10N_DEST`); commit it, so changes of the toolkit strings
 show up as a diff. Without `make`, call
-`vendor/bin/extract-l10n.php OUTPUT_FILE [SOURCE_DIR]`.
+`vendor/bin/extract-l10n.php OUTPUT_FILE [SOURCE_DIR] [IGNORE_FILE]`.
+
+To omit toolkit files not used by the app, pass its `.l10nignore` as
+`IGNORE_FILE`, or set `APP_TOOLKIT_L10N_IGNORE = $(ABSSRCDIR)/.l10nignore`
+before including the Makefile fragment. The ignore file contains one exact
+file path per line; blank lines and lines starting with `#` are ignored.
+Paths are matched from `src/`, discarding any preceding path, so both
+`src/Traits/Example.php` and
+`vendor/rotdrop/nextcloud-app-toolkit/src/Traits/Example.php` exclude the
+same toolkit file. Globs, directory entries, and negation are not supported.
+Without an ignore file, all toolkit files are included as before.
 
 Only string literals are extracted, calls with dynamic arguments are
 reported as warnings. Consider adding the output directory to the app's

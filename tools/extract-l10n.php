@@ -9,13 +9,13 @@
  * file is never executed, it just contains $l->t() and $l->n() calls which
  * can be picked up by xgettext.
  *
- * Usage: extract-l10n.php OUTPUT_FILE [SOURCE_DIR]
+ * Usage: extract-l10n.php OUTPUT_FILE [SOURCE_DIR] [IGNORE_FILE]
  *
  * @license AGPL-3.0-or-later
  */
 
 if ($argc < 2) {
-  fwrite(STDERR, 'Usage: ' . basename($argv[0]) . " OUTPUT_FILE [SOURCE_DIR]\n");
+  fwrite(STDERR, 'Usage: ' . basename($argv[0]) . " OUTPUT_FILE [SOURCE_DIR] [IGNORE_FILE]\n");
   exit(1);
 }
 
@@ -27,6 +27,27 @@ if ($sourceDir === false || !is_dir($sourceDir)) {
 }
 
 $skipDirs = [ 'tools', 'vendor', 'node_modules', 'l10n' ];
+$excludedFiles = [];
+if (isset($argv[3])) {
+  if (!is_file($argv[3]) || !is_readable($argv[3])) {
+    fwrite(STDERR, 'Cannot read ignore file: ' . $argv[3] . "\n");
+    exit(1);
+  }
+  $ignoreLines = file($argv[3], FILE_IGNORE_NEW_LINES);
+  if ($ignoreLines === false) {
+    fwrite(STDERR, 'Cannot read ignore file: ' . $argv[3] . "\n");
+    exit(1);
+  }
+  foreach ($ignoreLines as $entry) {
+    $entry = trim($entry);
+    if ($entry === '' || $entry[0] === '#') {
+      continue;
+    }
+    if (preg_match('~(?:^|/)src/(.+)$~', $entry, $matches)) {
+      $excludedFiles['src/' . $matches[1]] = true;
+    }
+  }
+}
 
 /** Decode a PHP string literal token without evaluating code, null if dynamic. */
 function decodeLiteral(string $literal): ?string
@@ -101,6 +122,11 @@ foreach ($iterator as $file) {
   if (!$file->isFile() || $file->getExtension() !== 'php') {
     continue;
   }
+  $relativePath = 'src/' .
+    str_replace(DIRECTORY_SEPARATOR, '/', substr($file->getPathname(), strlen($sourceDir) + 1));
+  if (isset($excludedFiles[$relativePath])) {
+    continue;
+  }
   $tokens = token_get_all(file_get_contents($file->getPathname()));
   $count = count($tokens);
   for ($i = 0; $i < $count; ++$i) {
@@ -128,8 +154,7 @@ foreach ($iterator as $file) {
       $skipped[] = $file->getPathname() . ':' . $line;
       continue;
     }
-    $sourceLocation = '@rotdrop/nextcloud-app-toolkit/src/' .
-      str_replace(DIRECTORY_SEPARATOR, '/', substr($file->getPathname(), strlen($sourceDir) + 1)) . ':' . $line;
+    $sourceLocation = '@rotdrop/nextcloud-app-toolkit/' . $relativePath . ':' . $line;
     if ($token[1] === 't') {
       $singular[$first][$sourceLocation] = true;
       continue;
