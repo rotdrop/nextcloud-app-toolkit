@@ -62,7 +62,7 @@ To omit toolkit files not used by the app, pass its `.l10nignore` as
 before including the Makefile fragment. The ignore file contains one exact
 file path per line; blank lines and lines starting with `#` are ignored.
 Entries are considered only when they contain
-`rotdrop/nextcloud-vue-components/src/...`; any preceding path is ignored
+`rotdrop/nextcloud-app-toolkit/src/...`; any preceding path is ignored
 when matching the file below `src/`. Entries for other package names, bare
 `src/...` paths, globs, directory entries, and negation are not supported.
 Without an ignore file, all toolkit files are included as before.
