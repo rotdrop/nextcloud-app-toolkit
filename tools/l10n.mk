@@ -11,14 +11,16 @@
 #
 # APP_TOOLKIT_DIR = $(ABSSRCDIR)/vendor/rotdrop/nextcloud-app-toolkit
 # APP_TOOLKIT_L10N_DEST = $(ABSSRCDIR)/l10n-sources/toolkit-strings.php
+# APP_TOOLKIT_L10N_IGNORE = $(ABSSRCDIR)/.l10nignore
 # PHP = php
 
 ABSSRCDIR ?= $(CURDIR)
 PHP ?= php
 APP_TOOLKIT_DIR ?= $(ABSSRCDIR)/vendor/rotdrop/nextcloud-app-toolkit
 APP_TOOLKIT_L10N_DEST ?= $(ABSSRCDIR)/l10n-sources/toolkit-strings.php
+APP_TOOLKIT_L10N_IGNORE ?=
 
 #@@ Generate the toolkit's string catalogue for the translation tool, commit the result.
 toolkit-l10n:
-	$(PHP) $(APP_TOOLKIT_DIR)/tools/extract-l10n.php $(APP_TOOLKIT_L10N_DEST) $(APP_TOOLKIT_DIR)/src
+	$(PHP) $(APP_TOOLKIT_DIR)/tools/extract-l10n.php $(APP_TOOLKIT_L10N_DEST) $(APP_TOOLKIT_DIR)/src $(if $(APP_TOOLKIT_L10N_IGNORE),"$(APP_TOOLKIT_L10N_IGNORE)")
 .PHONY: toolkit-l10n
