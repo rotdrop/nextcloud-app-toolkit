@@ -109,47 +109,47 @@ msgstr ""
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:247
 #, php-format
 msgid ""
-"Shared folder for mount-point \"%1$s\" already exists, cannot create it."
+"Team folder for mount-point \"%1$s\" already exists, cannot create it."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:286
 #, php-format
 msgid ""
-"Shared folder for mount-point \"%1$s\" does not exist, cannot add group "
+"Team folder for mount-point \"%1$s\" does not exist, cannot add group "
 "\"%2$s\"."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:457
 #, php-format
 msgid ""
-"Shared folder for mount-point \"%1$s\" does not exist, cannot change its "
+"Team folder for mount-point \"%1$s\" does not exist, cannot change its "
 "mount-point to \"%2$s\"."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:347
 #, php-format
 msgid ""
-"Shared folder for mount-point \"%1$s\" does not exist, cannot modify manager "
+"Team folder for mount-point \"%1$s\" does not exist, cannot modify manager "
 "\"%2$s\"."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:317
 #, php-format
 msgid ""
-"Shared folder for mount-point \"%1$s\" does not exist, cannot remove group "
+"Team folder for mount-point \"%1$s\" does not exist, cannot remove group "
 "\"%2$s\"."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:422
 #, php-format
 msgid ""
-"Shared folder for mount-point \"%1$s\" does not exist, cannot set "
+"Team folder for mount-point \"%1$s\" does not exist, cannot set "
 "permissions for group \"%2$s\"."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/GroupFoldersService.php:212
 #, php-format
-msgid "Shared folder with ID \"%1$s\" does not exist."
+msgid "Team folder with ID \"%1$s\" does not exist."
 msgstr ""
 
 #. TRANSLATORS: Source: src/Service/RequestService.php:170
