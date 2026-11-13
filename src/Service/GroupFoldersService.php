@@ -209,7 +209,7 @@ class GroupFoldersService
     /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->folderManager->getFolder($id);
     if ($folderInfo === null) {
-      throw new RuntimeException($this->l->t('Shared folder with ID "%1$s" does not exist.', [ $id ]));
+      throw new RuntimeException($this->l->t('Team folder with ID "%1$s" does not exist.', [ $id ]));
     }
     /** @var FolderWithMappingsAndCache $cachedInfo */
     foreach ($this->sharedFolders as $mountPoint => $cachedInfo) {
@@ -244,7 +244,7 @@ class GroupFoldersService
   {
     $folderInfo = $this->getFolder($mountPoint);
     if ($folderInfo !== null) {
-      throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" already exists, cannot create it.', [ $mountPoint ]));
+      throw new RuntimeException($this->l->t('Team folder for mount-point "%1$s" already exists, cannot create it.', [ $mountPoint ]));
     }
     $id = $this->folderManager->createFolder($mountPoint);
     $this->getFolderById($id); // just trigger cache-fill, ignore result
@@ -283,7 +283,7 @@ class GroupFoldersService
     /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
     if ($folderInfo === null) {
-      throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot add group "%2$s".', [ $mountPoint, $groupId ]));
+      throw new RuntimeException($this->l->t('Team folder for mount-point "%1$s" does not exist, cannot add group "%2$s".', [ $mountPoint, $groupId ]));
     }
     if (!isset($folderInfo->groups[$groupId])) {
       $this->folderManager->addApplicableGroup($folderInfo->id, $groupId);
@@ -314,7 +314,7 @@ class GroupFoldersService
     /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
     if ($folderInfo === null) {
-      throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot remove group "%2$s".', [ $mountPoint, $groupId ]));
+      throw new RuntimeException($this->l->t('Team folder for mount-point "%1$s" does not exist, cannot remove group "%2$s".', [ $mountPoint, $groupId ]));
     }
     $this->folderManager->removeApplicableGroup($folderInfo->id, $groupId);
     $this->getFolderById($folderInfo->id); // update cache
@@ -344,7 +344,7 @@ class GroupFoldersService
     /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
     if ($folderInfo === null) {
-      throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot modify manager "%2$s".', [ $mountPoint, $managerId ]));
+      throw new RuntimeException($this->l->t('Team folder for mount-point "%1$s" does not exist, cannot modify manager "%2$s".', [ $mountPoint, $managerId ]));
     }
 
     // $this->logDebug('FOLDER INFO ' . print_r($folderInfo->toArray(), true));
@@ -419,7 +419,7 @@ class GroupFoldersService
     /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
     if (null === $folderInfo) {
-      throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot set permissions for group "%2$s".', [ $mountPoint, $groupId ]));
+      throw new RuntimeException($this->l->t('Team folder for mount-point "%1$s" does not exist, cannot set permissions for group "%2$s".', [ $mountPoint, $groupId ]));
     }
     if (($folderInfo->groups[$groupId]['permissions'] ?? 0) != $permissions) {
       $this->folderManager->setGroupPermissions($folderInfo->id, $groupId, $permissions);
@@ -454,7 +454,7 @@ class GroupFoldersService
     /** @var FolderWithMappingsAndCache $folderInfo */
     $folderInfo = $this->getFolder($mountPoint);
     if (null === $folderInfo) {
-      throw new RuntimeException($this->l->t('Shared folder for mount-point "%1$s" does not exist, cannot change its mount-point to "%2$s".', [ $mountPoint,  ]));
+      throw new RuntimeException($this->l->t('Team folder for mount-point "%1$s" does not exist, cannot change its mount-point to "%2$s".', [ $mountPoint,  ]));
     }
     // POST BASE_URL/groupfolders/folders/FOLDER_ID/mountpoint
     // DATA [ mountpoint => NEW_MOUNT_POINT ]
