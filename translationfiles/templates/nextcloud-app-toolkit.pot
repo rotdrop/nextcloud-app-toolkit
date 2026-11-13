@@ -1,0 +1,294 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the nextcloud-app-toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: nextcloud-app-toolkit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 12:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. TRANSLATORS: Source: src/Traits/SanitizeFilenameTrait.php:81
+#, php-format
+msgid "%1$s (renamed)"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AppStorageDisclosure.php:91
+msgid "App-data root folder does not exist."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AppStorageDisclosure.php:130
+#, php-format
+msgid "App-storage sub-folder \"%s\" does not exist and cannot be created."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:282
+#, php-format
+msgid ""
+"Archive format of \"%1$s\" detected as \"%2$s\", but there is no backend "
+"driver installed which can decompress \".%3$s\" files."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AppStorageDisclosure.php:74
+msgid "Cloud installation problem: instance ID is missing."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Doctrine/ORM/EntitySerializer/EntitySerializer.php:256
+#, php-format
+msgid "Collection \"%1$s\" in entity of type \"%2$s\" is null."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:399
+#, php-format
+msgid "Converter \"%1$s\" has failed trying to convert MIME type \"%2$s\""
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/RequestService.php:215
+#, php-format
+msgid "Error response from call to internal route \"%1$s\": %2$s"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/RequestService.php:232
+#, php-format
+msgid "Error response from call to internal route \"%1$s\": %2$s --  %3$s"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Controller/EntityRepositoryControllerTrait.php:102
+#, php-format
+msgid ""
+"Exactly one of query-parameters \"%1$s\" and \"%2$s\" have to be specified."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:307
+msgid "Installation instructions:"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/AssetTrait.php:103
+#, php-format
+msgid ""
+"Installation problem; the required resource \"%1$s\" of type \"%2$s\" is not "
+"installed on the server, please contact the system administrator!"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/RequestService.php:226
+#, php-format
+msgid "Invalid OCS response from call to internal route \"%1$s\": %2$s"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/RequestService.php:201
+#, php-format
+msgid "Invalid response from API call: \"%s\""
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/AuthenticatedCommandTrait.php:80
+msgid "Login failed."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/AuthenticatedCommandTrait.php:78
+msgid "Login succeeded."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/AuthenticatedCommandTrait.php:69
+msgid "Password"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ExecutableFinder.php:135
+#, php-format
+msgid "Please install the \"%s\" program on the server."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:247
+#, php-format
+msgid ""
+"Team folder for mount-point \"%1$s\" already exists, cannot create it."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:286
+#, php-format
+msgid ""
+"Team folder for mount-point \"%1$s\" does not exist, cannot add group "
+"\"%2$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:457
+#, php-format
+msgid ""
+"Team folder for mount-point \"%1$s\" does not exist, cannot change its "
+"mount-point to \"%2$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:347
+#, php-format
+msgid ""
+"Team folder for mount-point \"%1$s\" does not exist, cannot modify manager "
+"\"%2$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:317
+#, php-format
+msgid ""
+"Team folder for mount-point \"%1$s\" does not exist, cannot remove group "
+"\"%2$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:422
+#, php-format
+msgid ""
+"Team folder for mount-point \"%1$s\" does not exist, cannot set "
+"permissions for group \"%2$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:212
+#, php-format
+msgid "Team folder with ID \"%1$s\" does not exist."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/RequestService.php:170
+#, php-format
+msgid ""
+"Supported data formats are \"%1$s\" and \"%2$s\", specified was \"%3$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:318
+#, php-format
+msgid ""
+"The \"%1$s\" driver claims to handle this format, but cannot extract the "
+"archive content."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:304
+#, php-format
+msgid "The \"%1$s\" driver could handle this format, but it is not installed."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:295
+#, php-format
+msgid ""
+"The archive format of \"%1$s\" has been detected as \"%2$s\", but there is "
+"no backend driver installed which can deal with this format."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/UtilTrait.php:386
+msgid "The input color values are invalid."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/UtilTrait.php:352
+#. TRANSLATORS: Source: src/Traits/UtilTrait.php:365
+#, php-format
+msgid "The supplied color-string \"%s\" seems to be invalid."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:429
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:507
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:539
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:560
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:603
+msgid "There is no archive file associated with this archiver instance."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Doctrine/ORM/EntitySerializer/EntitySerializer.php:337
+#, php-format
+msgid "Unable to compute a serialization for an instance of \"%s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:290
+msgid ""
+"Unable to deal with tar-files. Please check the installation of the app."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:268
+#, php-format
+msgid "Unable to detect the archive format of \"%1$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Doctrine/ORM/EntitySerializer/EntitySerializer.php:192
+#. TRANSLATORS: Source: src/Doctrine/ORM/EntitySerializer/EntitySerializer.php:238
+#. TRANSLATORS: Source: src/Doctrine/ORM/EntitySerializer/EntitySerializer.php:286
+#, php-format
+msgid "Unable to determine the identifier values for an instance of \"%s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:724
+#, php-format
+msgid ""
+"Unable to determine the version of the helper program \"%1$s\", is it "
+"installed?"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:175
+#, php-format
+msgid "Unable to find any of the fallback converters \"%s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Controller/EntityRepositoryControllerTrait.php:125
+#, php-format
+msgid "Unable to find the entity \"%1$s\" identified by \"%2$s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:365
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:377
+#, php-format
+msgid "Unable to open archive file %s (%s)"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Doctrine/ORM/AbstractEntityManager.php:137
+msgid "Unable to register types with DBAL."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/SanitizeFilenameTrait.php:92
+#, php-format
+msgid "Unable to sanitize filename \"%s\"."
+msgstr ""
+
+#. TRANSLATORS: Source: src/Middleware/ExceptionMiddleware.php:150
+#, php-format
+msgid "Unable to serve request to \"%1$s\": %2$s"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/ArchiveService.php:391
+#, php-format
+msgid "Uncompressed size of archive \"%1$s\" is too large: %2$s > %3$s"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:348
+#, php-format
+msgid ""
+"Universal converter \"%1$s\" has failed trying to convert MIME type \"%2$s\""
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/GroupFoldersService.php:178
+#, php-format
+msgid "Unknown search topic \"%1$s\""
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/AuthenticatedCommandTrait.php:67
+msgid "User"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/UtilTrait.php:243
+#. TRANSLATORS: Source: src/Traits/UtilTrait.php:245
+msgid "bytes"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:265
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:297
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:315
+msgid "not found"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Service/AnyToPdf.php:283
+msgid "pass through"
+msgstr ""
+
+#. TRANSLATORS: Source: src/Traits/SanitizeFilenameTrait.php:85
+msgid "renamed file"
+msgstr ""
