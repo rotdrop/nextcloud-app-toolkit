@@ -23,6 +23,7 @@
 namespace OCA\RotDrop\Toolkit\Doctrine\ORM;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -118,13 +119,31 @@ abstract class AbstractEntityManager extends EntityManagerDecorator implements S
     $connection = $this->getWrappedObject()->getConnection();
     try {
       $platform = $connection->getDatabasePlatform();
-      foreach (static::DBAL_TYPES as $phpType => $sqlType) {
-        if (empty($sqlType) && method_exists($phpType, 'getName')) {
-          $sqlType = new $phpType()->getName();
+      $configuration = $connection->getConfiguration();
+      $provider = null;
+      if (method_exists($configuration, 'getTypeProvider')) {
+        $provider = $configuration->getTypeProvider();
+        if (!$provider instanceof TypeRegistry && !$provider instanceof MutableTypeProvider) {
+          $provider = new MutableTypeProvider($provider);
+          $configuration->setTypeProvider($provider);
         }
+        $platform->setTypeProvider($provider);
+      }
+      foreach (static::DBAL_TYPES as $phpType => $sqlType) {
         $instance = new $phpType;
         $typeName = $instance->getName();
-        if (!Type::hasType($typeName)) {
+        if (empty($sqlType)) {
+          $sqlType = $typeName;
+        }
+        if ($provider instanceof MutableTypeProvider) {
+          $provider->set($typeName, $instance);
+        } elseif ($provider instanceof TypeRegistry) {
+          if ($provider->has($typeName)) {
+            $provider->override($typeName, $instance);
+          } else {
+            $provider->register($typeName, $instance);
+          }
+        } elseif (!Type::hasType($typeName)) {
           Type::addType($typeName, $phpType);
         } else {
           Type::overrideType($typeName, $phpType);
