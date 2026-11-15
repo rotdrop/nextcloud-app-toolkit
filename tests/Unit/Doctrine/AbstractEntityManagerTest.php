@@ -204,4 +204,39 @@ class AbstractEntityManagerTest extends TestCase
     $this->assertSame(RegisteredType::class, $types['toolkit_registration_test']::class);
     $this->assertArrayHasKey('toolkit_default_mapping_test', $types);
   }
+
+  public function testDefaultProvider(): void
+  {
+    $configuration = new Configuration();
+    if (!method_exists($configuration, 'getTypeProvider')) {
+      $this->markTestSkipped('DBAL does not support connection type providers.');
+    }
+
+    $provider = $configuration->getTypeProvider();
+    $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $configuration);
+    $this->initialize($connection);
+
+    $this->assertSame($provider, $configuration->getTypeProvider());
+    $this->assertSame(RegisteredType::class, $provider->get('toolkit_registration_test')::class);
+    $this->assertSame('registered:value', $connection->convertToPHPValue('value', 'toolkit_registration_test'));
+  }
+
+  public function testPlatformUsesCurrentConfigurationProvider(): void
+  {
+    $configuration = new Configuration();
+    if (!method_exists($configuration, 'getTypeProvider')) {
+      $this->markTestSkipped('DBAL does not support connection type providers.');
+    }
+
+    $configuration->setTypeProvider(new TypeRegistry());
+    $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $configuration);
+    $platform = $connection->getDatabasePlatform();
+    $replacement = new TypeRegistry();
+    $configuration->setTypeProvider($replacement);
+
+    $this->initialize($connection);
+    $this->assertSame($replacement, $configuration->getTypeProvider());
+    $this->assertSame('toolkit_registration_test', $platform->getDoctrineTypeMapping('toolkit_sql_test'));
+    $this->assertSame('registered:value', $connection->convertToPHPValue('value', 'toolkit_registration_test'));
+  }
 }
