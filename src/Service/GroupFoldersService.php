@@ -27,10 +27,12 @@ use Throwable;
 
 use Psr\Log\LoggerInterface;
 use OCP\IL10N;
+use OCP\IUser;
 use OCP\Constants;
 use OCP\Files\IRootFolder;
 
 use OCA\GroupFolders\Folder\FolderManager;
+use OCA\GroupFolders\Folder\FolderDefinitionWithPermissions;
 use OCA\GroupFolders\Folder\FolderWithMappingsAndCache;
 use OCA\GroupFolders\Mount\FolderStorageManager;
 
@@ -140,6 +142,38 @@ class GroupFoldersService
     $this->ensureFolders($reload);
     $this->logDebug('SHARED FOLDERS: ' . print_r($this->sharedFolders, true));
     return $this->sharedFolders[$mountPoint] ?? null;
+  }
+
+  /**
+   * Find a configured Groupfolder assigned to the given user by its exact
+   * mount-point name, using FolderManager metadata only.
+   *
+   * This does not resolve filesystem nodes or require the user's mounts to
+   * be installed. It checks assignment (including group and circle membership),
+   * not filesystem accessibility or the existence of any subfolder. Results
+   * are not cached, so assignments cannot leak between users.
+   *
+   * Like the other methods of this service, this requires Groupfolders to be
+   * installed and enabled. If it is unavailable, Nextcloud cannot resolve the
+   * service's Groupfolders dependencies; callers must guard service resolution.
+   * FolderManager errors propagate rather than being treated as missing folders.
+   *
+   * @param string $mountPoint The configured mount-point name, not a user path.
+   *
+   * @param IUser $user The user whose assignments should be queried.
+   *
+   * @return null|FolderDefinitionWithPermissions The Groupfolders metadata
+   * object, including id, mountPoint and effective permissions, or null if the
+   * folder is missing or not assigned to the user.
+   */
+  public function getFolderForUser(string $mountPoint, IUser $user):?FolderDefinitionWithPermissions
+  {
+    foreach ($this->folderManager->getFoldersForUser($user) as $folderInfo) {
+      if ($folderInfo->mountPoint === $mountPoint) {
+        return $folderInfo;
+      }
+    }
+    return null;
   }
 
   /**
