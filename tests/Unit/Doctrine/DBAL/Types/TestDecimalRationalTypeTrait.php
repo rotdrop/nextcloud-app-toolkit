@@ -67,7 +67,7 @@ trait TestDecimalRationalTypeTrait
     } else {
       $expected = implode('_', [AbstractDecimalRationalType::NAME_BASE, $this->precision, $this->scale]);
     }
-    $this->assertEquals($expected, new (self::DATABASE_TYPE_CLASS)()->getName());
+    $this->assertEquals($expected, (new (self::DATABASE_TYPE_CLASS))->getName());
   }
 
   /** @return void */
@@ -82,7 +82,7 @@ trait TestDecimalRationalTypeTrait
     $expected = 'DECIMAL(' . $this->precision .  ',' . $this->scale . ')';
     $this->assertEquals(
       $expected,
-      new (self::DATABASE_TYPE_CLASS)()->getSQLDeclaration([], $platform),
+      (new (self::DATABASE_TYPE_CLASS))->getSQLDeclaration([], $platform),
     );
   }
 
@@ -107,8 +107,8 @@ trait TestDecimalRationalTypeTrait
   /** @return void */
   public function testConvertToPhpValue(): void
   {
-    $this->assertNull(new (self::DATABASE_TYPE_CLASS)()->convertToPHPValue(null, $this->dbPlatform));
-    $this->assertNull(new (self::DATABASE_TYPE_CLASS)()->convertToPHPValue('', $this->dbPlatform));
+    $this->assertNull((new (self::DATABASE_TYPE_CLASS))->convertToPHPValue(null, $this->dbPlatform));
+    $this->assertNull((new (self::DATABASE_TYPE_CLASS))->convertToPHPValue('', $this->dbPlatform));
     $values = [
       [RationalNumber::create(0, 1, 2), $this->padDecimal(0, 5)],
       ['0.5', $this->padDecimal(0, 5)],
@@ -118,12 +118,12 @@ trait TestDecimalRationalTypeTrait
       $values[] = ['1.5', $this->padDecimal(1, 5)];
     }
     foreach ($values as $testCase) {
-      $phpValue = new (self::DATABASE_TYPE_CLASS)()->convertToPHPValue($testCase[0], $this->dbPlatform);
+      $phpValue = (new (self::DATABASE_TYPE_CLASS))->convertToPHPValue($testCase[0], $this->dbPlatform);
       $this->assertInstanceOf(self::NUMBER_CLASS, $phpValue);
       $this->assertEquals($testCase[1], $phpValue->jsonSerialize());
     }
     $number = (self::NUMBER_CLASS)::create(1, 2, 3);
-    $this->assertTrue($number === new (self::DATABASE_TYPE_CLASS)()->convertToPHPValue($number, $this->dbPlatform));
+    $this->assertTrue($number === (new (self::DATABASE_TYPE_CLASS))->convertToPHPValue($number, $this->dbPlatform));
   }
 
   /** @return void */
@@ -144,11 +144,11 @@ trait TestDecimalRationalTypeTrait
       $values[] = ['42', $this->padDecimal(42, 0)];
     }
     foreach ($values as $testCase) {
-      $databaseValue = new (self::DATABASE_TYPE_CLASS)()->convertToDatabaseValue($testCase[0], $this->dbPlatform);
+      $databaseValue = (new (self::DATABASE_TYPE_CLASS))->convertToDatabaseValue($testCase[0], $this->dbPlatform);
       $this->assertEquals($testCase[1], $databaseValue);
     }
     $outOfBoundsValue = str_repeat('9', 1 + $this->precision - $this->scale) . '.' . str_repeat('9', $this->scale);
     $this->expectException(SerializationFailed::class);
-    new (self::DATABASE_TYPE_CLASS)()->convertToDatabaseValue($outOfBoundsValue, $this->dbPlatform);
+    (new (self::DATABASE_TYPE_CLASS))->convertToDatabaseValue($outOfBoundsValue, $this->dbPlatform);
   }
 }

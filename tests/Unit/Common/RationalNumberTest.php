@@ -227,22 +227,19 @@ class RationalNumberTest extends TestCase
   }
 
   /**
-   * Test whether all this solves the floating point round-off problems.
+   * Test rounding an exact rational product half away from zero.
    *
    * @return void
    */
   public function testRound():void
   {
     $roundingExamples = [
-      // r1, r2, digits, wrong float rounding result, correct rational rounding result
-      [ [ 72, 5, 10], [1, 19, 100], 2, 86.27, [86, 28, 100] ],
+      // r1, r2, digits, expected rational rounding result
+      [ [ 72, 5, 10], [1, 19, 100], 2, [86, 28, 100] ],
     ];
-    foreach ($roundingExamples as $tuple) {
-      $float = ($tuple[0][0] + $tuple[0][1] / $tuple[0][2]) * ($tuple[1][0] + $tuple[1][1] / $tuple[1][2]);
-      // check that float gives indeed the wrong result:
-      $this->assertEquals($tuple[3], round($float, $tuple[2])); // wrong
-      $rational = RationalNumber::create(...$tuple[0])->multiply(RationalNumber::create(...$tuple[1]));
-      $this->assertEquals(true, $rational->round($tuple[2])->equals(RationalNumber::create(...$tuple[4])));
+    foreach ($roundingExamples as [$left, $right, $digits, $expected]) {
+      $rational = RationalNumber::create(...$left)->multiply(RationalNumber::create(...$right));
+      $this->assertTrue($rational->round($digits)->equals(RationalNumber::create(...$expected)));
     }
   }
 

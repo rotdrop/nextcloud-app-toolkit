@@ -138,7 +138,7 @@ abstract class AbstractMockProvider
    */
   private static function snapshotContainer(SimpleContainer $container): InnerContainer
   {
-    $innerContainer = new ReflectionProperty(SimpleContainer::class, 'container')->getValue($container);
+    $innerContainer = (new ReflectionProperty(SimpleContainer::class, 'container'))->getValue($container);
     $reflectionContainer = new ReflectionClass($innerContainer);
     $snapshot = new InnerContainer;
     /** @var ReflectionProperty $property */
@@ -169,7 +169,7 @@ abstract class AbstractMockProvider
   private static function restoreContainer(SimpleContainer $container, InnerContainer $snapshot): void
   {
     /** @var InnerContainer $innerContainer */
-    $innerContainer = new ReflectionProperty(SimpleContainer::class, 'container')->getValue($container);
+    $innerContainer = (new ReflectionProperty(SimpleContainer::class, 'container'))->getValue($container);
     // print_r($innerContainer->keys());
     // print_r($snapshot->keys());
     $reflectionContainer = new ReflectionClass($innerContainer);
@@ -198,7 +198,7 @@ abstract class AbstractMockProvider
   {
     $otherAppContainer = null;
     if (str_starts_with($service, \OCA::class) && !str_starts_with($service, \PHPUNIT_NC_APP_NAMESPACE)) {
-      $appContainers = new ReflectionProperty(\OC\ServerContainer::class, 'appContainers')->getValue(\OC::$server);
+      $appContainers = (new ReflectionProperty(\OC\ServerContainer::class, 'appContainers'))->getValue(\OC::$server);
       [, $app] = explode('\\', $service, 3);
       $app = strtolower($app);
       $otherAppContainer = $appContainers[$app] ?? null;
@@ -276,7 +276,7 @@ abstract class AbstractMockProvider
     self::$appContainer->registerService(LoggerInterface::class, fn() => $this->logger);
     \OC::$server->registerService(LoggerInterface::class, fn() => $this->logger);
     unset(\OC::$server[\OC\L10N\Factory::class]);
-    $appContainers = new ReflectionProperty(\OC\ServerContainer::class, 'appContainers')->getValue(\OC::$server);
+    $appContainers = (new ReflectionProperty(\OC\ServerContainer::class, 'appContainers'))->getValue(\OC::$server);
     if (empty(self::$serverContainerSnapshot)) {
       self::$serverContainerSnapshot = self::snapshotContainer(\OC::$server);
       foreach ($appContainers as $app => $container) {

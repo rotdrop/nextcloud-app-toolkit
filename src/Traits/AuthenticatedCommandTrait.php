@@ -22,16 +22,12 @@
 
 namespace OCA\RotDrop\Toolkit\Traits;
 
-use \RuntimeException;
-
-use OCP\Console\ExitCode;
 use OCP\Console\IInput;
 use OCP\Console\IOutput;
 use OCP\IL10N;
 use OCP\IUserManager;
 use OCP\IUserSession;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -63,11 +59,21 @@ trait AuthenticatedCommandTrait
    */
   protected function authenticate(InputInterface|IInput $input, OutputInterface|IOutput $output): int
   {
-    $helper = $this->getHelper('question');
-    $question = new Question($this->l->t('User') . ': ', '');
-    $userId = $helper->ask($input, $output, $question);
-    $question = (new Question($this->l->t('Password') . ': ', ''))->setHidden(true);
-    $password = $helper->ask($input, $output, $question);
+    if ($input instanceof IInput) {
+      $userId = $input->ask($this->l->t('User') . ': ');
+      $password = $input->askHidden($this->l->t('Password') . ': ');
+    } else {
+      $helper = $this->getHelper('question');
+      $question = new Question($this->l->t('User') . ': ', '');
+      $userId = $helper->ask($input, $output, $question);
+      $question = (new Question($this->l->t('Password') . ': ', ''))->setHidden(true);
+      $password = $helper->ask($input, $output, $question);
+    }
+
+    if (!is_string($userId) || $userId === '' || !is_string($password) || $password === '') {
+      $output->writeln($this->l->t('Login failed.'));
+      return 1;
+    }
 
     // $output->writeln($this->l->t('Your Answers: "%s:%s"', [ $userId, $password ]));
     $user = $this->userManager->get($userId);

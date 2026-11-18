@@ -79,7 +79,7 @@ class EntityArrayAdapter implements ArrayAccess, Iterator, JsonSerializable
     if ($root === null) {
       $this->entitySerializer = clone ($entitySerializer ?? \OCP\Server::get(EntitySerializer::class));
       $fqn = get_class($entity);
-      $prefix = new ReflectionClass($fqn)->getNamespaceName();
+      $prefix = (new ReflectionClass($fqn))->getNamespaceName();
       $this->entityName = substr($fqn, strlen($prefix) + 1);
       $this->entitySerializer->setCommonPrefix($prefix);
     } else {

@@ -41,7 +41,7 @@ class HttpStatus
   public static function getPhrase(int $httpStatusCode): ?string
   {
     try {
-      $phrase = new Response()->withStatus($httpStatusCode)->getReasonPhrase();
+      $phrase = (new Response())->withStatus($httpStatusCode)->getReasonPhrase();
     } catch (InvalidArgumentException) {
       return null;
     }
