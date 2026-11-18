@@ -60,8 +60,8 @@ trait AuthenticatedCommandTrait
   protected function authenticate(InputInterface|IInput $input, OutputInterface|IOutput $output): int
   {
     if ($input instanceof IInput) {
-      $userId = $input->ask($this->l->t('User') . ': ');
-      $password = $input->askHidden($this->l->t('Password') . ': ');
+      $userId = $input->ask($this->l->t('User'));
+      $password = $input->askHidden($this->l->t('Password'));
     } else {
       $helper = $this->getHelper('question');
       $question = new Question($this->l->t('User') . ': ', '');
