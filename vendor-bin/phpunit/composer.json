@@ -1,11 +1,8 @@
 {
   "config": {
-    "platform": {
-      "php": "8.4.1"
-    },
     "sort-packages": true
   },
   "require-dev": {
-    "phpunit/phpunit": "^13.0.5"
+    "phpunit/phpunit": "^12.5 || ^13.0.5"
   }
 }
