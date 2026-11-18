@@ -35,6 +35,7 @@ use OCP\IUserManager;
 use OCP\IUserSession;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -121,7 +122,7 @@ class AuthenticatedCommandTraitTest extends TestCase
         return $this->authenticate($input, $output);
       }
     };
-    $command->getHelperSet()->set($helper, 'question');
+    $command->setHelperSet(new HelperSet([ 'question' => $helper ]));
 
     $this->assertSame(0, $command->authenticateForTest($input, $output));
     $this->assertSame('User: ', $questions[0]->getQuestion());
