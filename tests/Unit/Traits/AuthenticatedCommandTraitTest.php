@@ -58,8 +58,8 @@ class AuthenticatedCommandTraitTest extends TestCase
     $userSession->expects($this->once())->method('login')->with('alice', 'secret')->willReturn(true);
 
     $input = $this->createMock(IInput::class);
-    $input->expects($this->once())->method('ask')->with('User: ')->willReturn('alice');
-    $input->expects($this->once())->method('askHidden')->with('Password: ')->willReturn('secret');
+    $input->expects($this->once())->method('ask')->with('User')->willReturn('alice');
+    $input->expects($this->once())->method('askHidden')->with('Password')->willReturn('secret');
     $output = $this->createMock(IOutput::class);
     $output->expects($this->once())->method('writeln')->with('Login succeeded.');
 
@@ -140,8 +140,8 @@ class AuthenticatedCommandTraitTest extends TestCase
     $userSession->expects($this->never())->method('login');
 
     $input = $this->createMock(IInput::class);
-    $input->expects($this->once())->method('ask')->with('User: ')->willReturn(null);
-    $input->expects($this->once())->method('askHidden')->with('Password: ')->willReturn('secret');
+    $input->expects($this->once())->method('ask')->with('User')->willReturn(null);
+    $input->expects($this->once())->method('askHidden')->with('Password')->willReturn('secret');
     $output = $this->createMock(IOutput::class);
     $output->expects($this->once())->method('writeln')->with('Login failed.');
 
