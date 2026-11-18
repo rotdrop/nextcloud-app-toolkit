@@ -11,7 +11,8 @@
     "doctrine/dbal": "^4.0",
     "markrogoyski/math-php": "^2.0",
     "nesbot/carbon": "^3.0",
-    "nextcloud/ocp": "dev-master"
+    "nextcloud/ocp": "dev-master",
+    "symfony/console": "^6.4"
   },
   "bin": [
     "tools/extract-l10n.php"
