@@ -51,8 +51,11 @@ class ExceptionMiddleware extends Middleware
   use \OCA\RotDrop\Toolkit\Traits\HasAnnotationOrAttributeTrait;
   use \OCA\RotDrop\Toolkit\Traits\LoggerTrait;
 
+  public const CATCH_ALL = 'catchAll';
+  public const HTTP_STATUS_CODE_MAPPING = 'httpStatusCodeMapping';
+
   public const DEFAULT_HTTP_STATUS_CODE_MAPPING = [
-    InvalidArgumentException::class => Http::STATUS_BAD_REQUEST,
+    \InvalidArgumentException::class => Http::STATUS_BAD_REQUEST,
     'default' => Http::STATUS_INTERNAL_SERVER_ERROR,
   ];
 
@@ -76,10 +79,10 @@ class ExceptionMiddleware extends Middleware
     protected LoggerInterface $logger,
     protected ?array $middlewareOptions = null,
   ) {
-    $this->catchAll = $middlewareOptions[__CLASS__]['catchAll'] ?? false;
+    $this->catchAll = $middlewareOptions[__CLASS__][self::CATCH_ALL] ?? false;
     $this->httpStatusCodeMapping = [
       ...self::DEFAULT_HTTP_STATUS_CODE_MAPPING,
-      ...($middlewareOptions[__CLASS__]['httpStatusCodeMapping'] ?? []),
+      ...($middlewareOptions[__CLASS__][self::HTTP_STATUS_CODE_MAPPING] ?? []),
     ];
   }
   // phpcs:enable
