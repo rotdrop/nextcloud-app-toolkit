@@ -55,7 +55,11 @@ use Psr\Log\LoggerInterface;
 use OCA\RotDrop\Tests\Logger;
 use OCA\RotDrop\Tests\DatabaseProvider;
 
-/** Provide a couple of important services, partially using mocked classes. */
+/**
+ * Provide a couple of important services, partially using mocked classes.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 abstract class AbstractMockProvider
 {
   public const CLOUD_USER_UID = 'john.doe';

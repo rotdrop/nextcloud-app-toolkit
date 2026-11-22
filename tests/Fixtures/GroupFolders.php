@@ -7,6 +7,7 @@
 
 namespace OCA\GroupFolders\Folder;
 
+use LogicException;
 use OCP\IUser;
 
 class FolderDefinitionWithPermissions
@@ -24,13 +25,13 @@ class FolderManager
   /** @return list<FolderDefinitionWithPermissions> */
   public function getFoldersForUser(IUser $user, ?int $folderId = null, ?array $paths = null):array
   {
-    throw new \LogicException('This method must be mocked.');
+    throw new LogicException('This method must be mocked.');
   }
 
   /** @return array */
   public function getAllFoldersWithSize():array
   {
-    throw new \LogicException('This method must not be used for per-user discovery.');
+    throw new LogicException('This method must not be used for per-user discovery.');
   }
 }
 

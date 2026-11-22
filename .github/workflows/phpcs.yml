@@ -1,0 +1,35 @@
+name: PHPCS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phpcs:
+    name: PHPCS
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: dom, simplexml, xmlwriter
+          coverage: none
+          tools: composer:v2
+
+      - name: Install PHPCS
+        working-directory: vendor-bin/phpcs
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Check PHP sources and tests
+        run: vendor-bin/phpcs/vendor/bin/phpcs --standard=.phpcs.xml src/ tests/

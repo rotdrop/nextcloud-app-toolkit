@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\TypeProvider;
 use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use ErrorException;
 use IteratorAggregate;
 use OCA\RotDrop\Toolkit\Doctrine\ORM\AbstractEntityManager;
 use OCA\RotDrop\Toolkit\Doctrine\ORM\MutableTypeProvider;
@@ -113,7 +114,7 @@ class AbstractEntityManagerTest extends TestCase
     Deprecation::withoutDeduplication();
     set_error_handler(static function (int $severity, string $message): void {
       if ($severity === E_USER_DEPRECATED || $severity === E_DEPRECATED) {
-        throw new \ErrorException($message, 0, $severity);
+        throw new ErrorException($message, 0, $severity);
       }
     });
     try {

@@ -1,0 +1,10 @@
+--- phpmd/phpmd/bin/phpmd.orig
++++ phpmd/phpmd/bin/phpmd
+@@ -55,6 +55,7 @@
+ if (LegacyArguments::isLegacyInvocation($argv)) {
+     fwrite(STDERR, LegacyArguments::deprecationMessage($argv));
+     $argv = LegacyArguments::transform($argv);
++    array_splice($argv, 1, 1);
+     $_SERVER['argv'] = $argv;
+ }
+ $application = new Application('PHPMD', Command::getVersion());

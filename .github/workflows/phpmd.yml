@@ -1,0 +1,41 @@
+name: PHPMD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phpmd:
+    name: PHPMD
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: dom, mbstring, xml
+          coverage: none
+          tools: composer:v2
+
+      - name: Install PHPMD
+        working-directory: vendor-bin/phpmd
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Check PHP sources and tests
+        run: >-
+          vendor-bin/phpmd/vendor/bin/phpmd src/ text .phpmd.xml
+          --suffixes php --threads 1 --no-cache
+      - name: Check tests
+        run: >-
+          vendor-bin/phpmd/vendor/bin/phpmd tests/ text .phpmd.xml
+          --suffixes php --threads 1 --no-cache

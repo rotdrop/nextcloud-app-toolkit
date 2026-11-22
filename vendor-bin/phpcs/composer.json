@@ -1,0 +1,24 @@
+{
+  "platform": {
+    "php": "8.4"
+  },
+  "sort-packages": true,
+  "require-dev": {
+    "cweagans/composer-patches": "^1.7",
+    "squizlabs/php_codesniffer": "^4.0.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "extra": {
+    "composer-exit-on-patch-failure": true,
+    "patches": {
+      "squizlabs/php_codesniffer": {
+        "Allow short variable names for int and bool": "../../patches/phpcs/allow-short-variable-names.patch",
+        "Allow nullable short-hand": "../../patches/phpcs/allow-nullable-shorthand.patch"
+      }
+    }
+  }
+}

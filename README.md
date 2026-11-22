@@ -83,6 +83,20 @@ make clean   # remove vendor dirs, caches and composer.lock files
 
 Alternatively run `composer install && composer test`.
 
+PHPCS and PHPMD are also installed in separate `vendor-bin` namespaces.
+Check PHP changes with:
+
+```sh
+vendor-bin/phpcs/vendor/bin/phpcs --standard=.phpcs.xml src/ tests/
+vendor-bin/phpmd/vendor/bin/phpmd src/ text .phpmd.xml --suffixes php --threads 1 --no-cache
+vendor-bin/phpmd/vendor/bin/phpmd tests/ text .phpmd.xml --suffixes php --threads 1 --no-cache
+```
+
+PHPCS reports warnings without failing, as in the upstream project. Its
+documentation and class-layout checks are relaxed for tests, where fixtures
+and test doubles commonly share files. PHPCS and PHPMD run in GitHub Actions
+on pushes to `main` and pull requests, and can also be started manually.
+
 The PHPUnit GitHub Actions workflow runs the same commands with PHP 8.3, 8.4, and 8.5
 on pushes to `main` and when pull requests are opened, updated with new
 commits, reopened, or edited. It can also be started manually. Composer
