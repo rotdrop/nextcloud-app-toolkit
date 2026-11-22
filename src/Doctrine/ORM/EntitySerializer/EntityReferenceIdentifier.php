@@ -22,7 +22,6 @@
 
 namespace OCA\RotDrop\Toolkit\Doctrine\ORM\EntitySerializer;
 
-
 /**
  * The metadata generator must generate the metadata in "our" namespace.
  */

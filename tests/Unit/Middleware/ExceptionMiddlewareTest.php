@@ -5,6 +5,7 @@
 
 namespace OCA\RotDrop\Toolkit\Tests\Unit\Middleware;
 
+use ReflectionProperty;
 use PHPUnit\Framework\Attributes;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -48,9 +49,9 @@ class ExceptionMiddlewareTest extends TestCase
     );
 
     $this->assertTrue(
-      (new \ReflectionProperty(ExceptionMiddleware::class, 'catchAll'))->getValue($middleware),
+      (new ReflectionProperty(ExceptionMiddleware::class, 'catchAll'))->getValue($middleware),
     );
-    $httpStatusCodeMapping = (new \ReflectionProperty(ExceptionMiddleware::class, 'httpStatusCodeMapping'))
+    $httpStatusCodeMapping = (new ReflectionProperty(ExceptionMiddleware::class, 'httpStatusCodeMapping'))
       ->getValue($middleware);
     $this->assertSame(Http::STATUS_CONFLICT, $httpStatusCodeMapping[\InvalidArgumentException::class]);
     $this->assertSame(Http::STATUS_INTERNAL_SERVER_ERROR, $httpStatusCodeMapping['default']);

@@ -2,6 +2,8 @@
 
 namespace OCA\RotDrop\Toolkit\Tests\Unit\Tools;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use PHPUnit\Framework\Attributes;
 use PHPUnit\Framework\TestCase;
 
@@ -34,9 +36,9 @@ PHP);
 
   protected function tearDown(): void
   {
-    $iterator = new \RecursiveIteratorIterator(
-      new \RecursiveDirectoryIterator($this->directory, \FilesystemIterator::SKIP_DOTS),
-      \RecursiveIteratorIterator::CHILD_FIRST
+    $iterator = new RecursiveIteratorIterator(
+      new RecursiveDirectoryIterator($this->directory, \FilesystemIterator::SKIP_DOTS),
+      RecursiveIteratorIterator::CHILD_FIRST
     );
     foreach ($iterator as $file) {
       if ($file->isDir()) {

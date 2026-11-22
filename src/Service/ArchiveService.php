@@ -22,7 +22,6 @@
 
 namespace OCA\RotDrop\Toolkit\Service;
 
-
 use DateTimeInterface;
 use Normalizer;
 use SensitiveParameter;
@@ -198,6 +197,8 @@ class ArchiveService
    * @param mixed $parameters
    *
    * @return string
+   *
+   * @SuppressWarnings(PHPMD.ShortMethodName)
    */
   protected function t(string $formatString, mixed $parameters = null):string
   {

@@ -1,0 +1,25 @@
+{
+  "minimum-stability": "dev",
+  "platform": {
+    "php": "8.4"
+  },
+  "sort-packages": true,
+  "require-dev": {
+    "cweagans/composer-patches": "^1.7",
+    "phpmd/phpmd": "3.x-dev"
+  },
+  "extra": {
+    "composer-exit-on-patch-failure": true,
+    "patches": {
+      "phpmd/phpmd": {
+        "Fix defining the default command": "../../patches/phpmd/fix-set-default-command.patch",
+        "Support legacy arguments with the default command": "../../patches/phpmd/fix-legacy-arguments.patch"
+      }
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  }
+}

@@ -37,25 +37,45 @@ class MutableTypeProvider implements TypeProvider, IteratorAggregate
   /** @var array<string, Type> */
   private array $types = [];
 
+  /**
+   * Wrap the provider whose types may be overridden.
+   *
+   * @param TypeProvider $provider The underlying provider.
+   */
   public function __construct(private TypeProvider $provider)
   {
   }
 
+  /**
+   * Add or replace a type.
+   *
+   * @param string $name Type name.
+   * @param Type $type Type implementation.
+   *
+   * @return void
+   */
   public function set(string $name, Type $type): void
   {
     $this->types[$name] = $type;
   }
 
+  /** {@inheritdoc} */
   public function has(string $name): bool
   {
     return isset($this->types[$name]) || $this->provider->has($name);
   }
 
+  /** {@inheritdoc} */
   public function get(string $name): Type
   {
     return $this->types[$name] ?? $this->provider->get($name);
   }
 
+  /**
+   * Iterate over the combined types, preferring overrides.
+   *
+   * @return Traversable<string, Type>
+   */
   public function getIterator(): Traversable
   {
     foreach ($this->provider as $name => $type) {

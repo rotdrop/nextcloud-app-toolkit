@@ -5,6 +5,7 @@
 
 namespace OCA\RotDrop\Toolkit\Tests\Unit\Service;
 
+use RuntimeException;
 use PHPUnit\Framework\Attributes;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -110,7 +111,7 @@ class GroupFoldersServiceTest extends TestCase
   public function testMetadataErrorsAreNotReportedAsMissingFolders():void
   {
     $user = $this->createStub(IUser::class);
-    $error = new \RuntimeException('Metadata query failed');
+    $error = new RuntimeException('Metadata query failed');
     $this->folderManager->expects($this->once())
       ->method('getFoldersForUser')
       ->with($this->identicalTo($user))
