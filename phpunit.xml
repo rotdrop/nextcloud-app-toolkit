@@ -30,6 +30,8 @@
       <directory>src/DTO</directory>
       <directory>src/Doctrine</directory>
       <directory>src/Exceptions</directory>
+      <directory>src/AppInfo</directory>
+      <directory>src/Middleware</directory>
       <directory>src/Traits</directory>
     </include>
   </source>
