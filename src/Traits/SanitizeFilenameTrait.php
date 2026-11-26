@@ -25,7 +25,7 @@ namespace OCA\RotDrop\Toolkit\Traits;
 use Throwable;
 
 use OCP\IL10N;
-use OC\Files\FilenameValidator;
+use OCP\Files\IFilenameValidator;
 use Psr\Container\ContainerInterface;
 
 use OCA\RotDrop\Toolkit\Exceptions;
@@ -58,35 +58,17 @@ trait SanitizeFilenameTrait
     }
     $oldName = $name;
     try {
-      /** @var FilenameValidator $filenameValidator */
-      $filenameValidator = $this->appContainer->get(FilenameValidator::class);
-
-      $forbiddenCharacters = $filenameValidator->getForbiddenCharacters();
-      $charReplacement = array_diff(['_', ' ', '-'], $forbiddenCharacters);
-      $charReplacement = reset($charReplacement) ?: '';
-
-      $forbiddenExtensions = $filenameValidator->getForbiddenExtensions();
-      foreach ($forbiddenExtensions as $extension) {
-        if (str_ends_with($name, $extension)) {
-          $name = substr($name, 0, strlen($name) - strlen($extension));
-          $extension = $this->fileExtensionFromMimeType($mimeType);
-          if ($extension && !in_array($extension, $forbiddenExtensions)) {
-            $name .= '.' . $extension;
-          }
+      /** @var IFilenameValidator $filenameValidator */
+      $filenameValidator = $this->appContainer->get(IFilenameValidator::class);
+      $name = $filenameValidator->sanitizeFilename($name);
+      // A forbidden extension (e.g. ".part") has been stripped, try to
+      // replace it by one derived from the MIME-type.
+      if (pathinfo($oldName, PATHINFO_EXTENSION) !== '' && pathinfo($name, PATHINFO_EXTENSION) === '') {
+        $extension = $this->fileExtensionFromMimeType($mimeType);
+        if ($extension && $filenameValidator->isFilenameValid($name . '.' . $extension)) {
+          $name .= '.' . $extension;
         }
       }
-
-      $basename = substr($name, 0, strpos($name, '.', 1) ?: null);
-      if (in_array($basename, $filenameValidator->getForbiddenBasenames())) {
-        $name = str_replace($basename, $this->l->t('%1$s (renamed)', [$basename]), $name);
-      }
-
-      if ($name === '') {
-        $name = $this->l->t('renamed file');
-      }
-
-      $forbiddenCharacter = $filenameValidator->getForbiddenCharacters();
-      $name = str_replace($forbiddenCharacter, $charReplacement, $name);
     } catch (Throwable $t) {
       throw new Exceptions\EnduserNotificationException(
         $this->l->t('Unable to sanitize filename "%s".', $oldName),

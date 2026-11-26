@@ -31,7 +31,7 @@ use OCP\Authentication\LoginCredentials\ICredentials as LoginCredentials;
 use OCP\IUserSession;
 use OCP\Security\ISecureRandom;
 use OC\Authentication\Token\IProvider as TokenProvider;
-use OC\Authentication\Token\IToken;
+use OCP\Authentication\Token\IToken;
 
 /**
  * Service class for generating and perhaps maintaining app-passwords. The use
