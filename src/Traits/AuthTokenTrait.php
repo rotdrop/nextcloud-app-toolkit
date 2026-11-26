@@ -26,11 +26,12 @@ use Throwable;
 use DateTimeImmutable;
 
 use OCP\IRequest;
+use OCP\IURLGenerator;
+use OCP\Server;
 use OCP\Security\ISecureRandom;
 use OCP\Authentication\LoginCredentials\IStore as CredentialsStore;
 use OC\Authentication\Token\IProvider as TokenProvider;
-use OC\Authentication\Exceptions\InvalidTokenException;
-use OC\Authentication\Token\IToken;
+use OCP\Authentication\Exceptions\InvalidTokenException;
 
 /**
  * Trait for obtaining a cookie secured auth-token.
@@ -75,7 +76,7 @@ trait AuthTokenTrait
       $passphrase = $this->getAuthCookie($cookieName, $tokenExpiry);
       try {
         $token = $this->tokenProvider->getToken($passphrase);
-      } catch (\OC\Authentication\Exceptions\InvalidTokenException $e) {
+      } catch (InvalidTokenException $e) {
         $token = $this->tokenProvider->generateToken(
           $passphrase,
           $credentials->getUID(),
@@ -111,7 +112,7 @@ trait AuthTokenTrait
     if ($passphrase === null) {
       $passphrase = $this->secureRandom->generate(128);
       $secureCookie = $this->request->getServerProtocol() === 'https';
-      $webRoot = \OC::$WEBROOT;
+      $webRoot = Server::get(IURLGenerator::class)->getWebroot();
       if ($webRoot === '') {
         $webRoot = '/';
       }
@@ -139,7 +140,7 @@ trait AuthTokenTrait
   protected function deleteAuthCookie(string $cookieName):void
   {
     $secureCookie = $this->request->getServerProtocol() === 'https';
-    $webRoot = \OC::$WEBROOT;
+    $webRoot = Server::get(IURLGenerator::class)->getWebroot();
     if ($webRoot === '') {
       $webRoot = '/';
     }

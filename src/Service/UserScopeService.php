@@ -27,7 +27,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 
 use OC\Authentication\Token\IProvider as TokenProvider;
-use OC\Authentication\Token\IToken;
 
 use Psr\Log\LoggerInterface;
 use OCP\IRequest;
