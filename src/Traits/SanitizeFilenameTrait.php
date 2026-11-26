@@ -63,7 +63,8 @@ trait SanitizeFilenameTrait
       $name = $filenameValidator->sanitizeFilename($name);
       // A forbidden extension (e.g. ".part") has been stripped, try to
       // replace it by one derived from the MIME-type.
-      if (pathinfo($oldName, PATHINFO_EXTENSION) !== '' && pathinfo($name, PATHINFO_EXTENSION) === '') {
+      $oldExtension = pathinfo($oldName, PATHINFO_EXTENSION);
+      if ($oldExtension !== '' && !str_ends_with($name, '.' . $oldExtension)) {
         $extension = $this->fileExtensionFromMimeType($mimeType);
         if ($extension && $filenameValidator->isFilenameValid($name . '.' . $extension)) {
           $name .= '.' . $extension;
