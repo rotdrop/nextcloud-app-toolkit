@@ -195,14 +195,8 @@ class EntityArrayAdapter implements ArrayAccess, Iterator, JsonSerializable
       return $this->overriddenData[$offset];
     }
     $value = $flatEntity[$offset];
-    if ($this->depth > 0 && ($value instanceof EntityReference)) {
-
-      // This cannot happen:
-      //
-      // if (!isset($data->repositories[$value->entityClassName][$value->flatIdentifier])) {
-      //   throw new UnexpectedValueException('Offset "' . $offset . '" has not been fetched from the database at depth "' . $this->depth . '".');
-      // }
-
+    if ($this->depth > 0 && ($value instanceof EntityReference)
+        && isset($data->repositories[$value->entityClassName][$value->flatIdentifier])) {
       $result = new self(
         entity: $value->entityClassName,
         flatIdentifier: $value->flatIdentifier,
@@ -219,18 +213,12 @@ class EntityArrayAdapter implements ArrayAccess, Iterator, JsonSerializable
       $flatCollection = [];
       $baseClass = $value->entityClassName;
 
-      // This cannot happen:
-      //
-      // $fetched = array_reduce(
-      //   $value->entities,
-      //   function(bool $carry, EntityReference $entityReference) use ($data, $baseClass) {
-      //     return $carry && isset($data->repositories[$entityReference->entityClassName ?? $baseClass][$entityReference->flatIdentifier]);
-      //   },
-      //   true,
-      // );
-      // if (!$fetched) {
-      //   throw new UnexpectedValueException('Offset "' . $offset . '" has not been fetched from the database at depth "' . $this->depth . '".');
-      // }
+      foreach ($value->entities as $entityReference) {
+        $entityName = $entityReference->entityClassName ?? $baseClass;
+        if (!isset($data->repositories[$entityName][$entityReference->flatIdentifier])) {
+          return $value;
+        }
+      }
 
       /** @var EntityReference $entityReference */
       foreach ($value->entities as $key => $entityReference) {

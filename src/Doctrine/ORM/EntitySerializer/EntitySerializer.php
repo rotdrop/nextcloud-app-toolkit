@@ -58,6 +58,9 @@ class EntitySerializer
 
   private ?string $commonPrefix = null;
 
+  /** @var array<class-string> */
+  private array $excludedClasses = [];
+
   /** {@inheritdoc} */
   public function __construct(
     protected EntityManager $entityManager,
@@ -89,6 +92,37 @@ class EntitySerializer
   public function getCommonPrefix(): ?string
   {
     return $this->commonPrefix;
+  }
+
+  /**
+   * Stop association traversal at instances of these classes or subclasses.
+   * References are still emitted, and explicitly added root entities are
+   * still serialized. Use fully qualified names, regardless of commonPrefix.
+   * This configuration survives reset().
+   *
+   * @param array<class-string> $excludedClasses
+   *
+   * @return self
+   */
+  public function setExcludedClasses(array $excludedClasses): self
+  {
+    $this->excludedClasses = $excludedClasses;
+    return $this;
+  }
+
+  /**
+   * @param object $entity
+   *
+   * @return bool
+   */
+  private function isExcluded(object $entity): bool
+  {
+    foreach ($this->excludedClasses as $className) {
+      if (is_a($entity, $className)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -170,7 +204,8 @@ class EntitySerializer
    *
    * @param int $depth Recursion depth, defaults to 1 meaning: fetch the
    * top-level entity and all associated entities (including collections) but
-   * do not fetch associated entities of associated entities.
+   * do not fetch associated entities of associated entities. Classes configured
+   * through setExcludedClasses() are referenced without recursing into them.
    *
    * @param bool $principal Whether to add the entity the the principle
    * entities, or just include it as part of a repository.
@@ -245,6 +280,7 @@ class EntitySerializer
               entityClassName: $targetClassName,
             );
             if ($depth > 0
+                && !$this->isExcluded($targetEntity)
                 && (empty($this->repositories[$targetClassName][$flatTargetIdentifier])
                     || ($this->entityDepths[$targetClassName][$flatTargetIdentifier] ?? -1) < ($depth - 1))) {
               $this->addEntity($targetEntity, $depth - 1, false);
@@ -297,6 +333,7 @@ class EntitySerializer
                 entityClassName: $entityName,
               );
               if ($depth > 0
+                  && !$this->isExcluded($targetEntity)
                   && (empty($this->repositories[$targetClassName][$flatTargetIdentifier])
                       || ($this->entityDepths[$targetClassName][$flatTargetIdentifier] ?? -1) < $depth - 1)) {
                 $this->addEntity($targetEntity, $depth - 1, false);
