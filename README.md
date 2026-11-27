@@ -71,6 +71,31 @@ Only string literals are extracted, calls with dynamic arguments are
 reported as warnings. Consider adding the output directory to the app's
 `.gitattributes` with `export-ignore` to keep it out of release archives.
 
+## Entity serialization
+
+`EntitySerializer::setExcludedClasses()` limits association traversal in addition
+to the depth limit. Pass fully qualified class names; subclasses (including
+Doctrine proxies) match too:
+
+```php
+$serializer->setExcludedClasses([File::class]);
+$serializer->addEntity($musician, depth: 1);
+$response = $serializer->export();
+```
+
+Excluded associations retain their class-and-identifier references but are not
+recursively serialized or explicitly initialized by the serializer.
+`EntityArrayAdapter::create(..., entitySerializer: $serializer)` also respects
+this configuration and retains references to unfetched entities.
+If a collection is only partly fetched, the adapter retains the entire reference
+collection, preserving its base class and identifiers.
+Exclusions survive `reset()`; pass an empty list to clear them. Configure them
+before collecting entities, since previously collected data is not removed.
+Explicitly added root entities are still serialized: this is a traversal limit,
+not an access-control mechanism. Collections still have to be iterated to obtain
+their identifiers, so this does not prevent Doctrine from loading collection
+members.
+
 ## Development
 
 PHPUnit is installed in its own `vendor-bin/phpunit` namespace by means of
